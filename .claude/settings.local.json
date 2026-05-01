@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(pnpm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(node -e \"require\\('bs58'\\)\")",
+      "Bash(npx --yes npm@latest install bs58 --ignore-scripts)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(node -e \"const p = require\\('@noble/ed25519/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(node -e \"const p = require\\('@noble/ed25519'\\); console.log\\(Object.keys\\(p\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(npx --yes npm@latest install @noble/hashes --ignore-scripts)",
+      "Bash(curl *)",
+      "Bash(node -e \"console.log\\('Node OK'\\)\")",
+      "Bash(npm view *)",
+      "Bash(pnpm *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

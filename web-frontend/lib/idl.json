@@ -1,0 +1,1407 @@
+{
+  "address": "HWgSd3Dd67ypxPYToXYATipRdcoPb3SJAc1EYyJyLoFg",
+  "metadata": {
+    "name": "powermoney",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "PowerMoney programmable payments"
+  },
+  "instructions": [
+    {
+      "name": "approve_milestone",
+      "discriminator": [
+        145,
+        85,
+        92,
+        60,
+        50,
+        130,
+        219,
+        106
+      ],
+      "accounts": [
+        {
+          "name": "approver",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "condition_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "cancel_vault",
+      "discriminator": [
+        150,
+        95,
+        141,
+        252,
+        158,
+        53,
+        60,
+        102
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "creator_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_vault",
+      "discriminator": [
+        29,
+        237,
+        247,
+        208,
+        193,
+        82,
+        54,
+        135
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "recipient"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator_token_account",
+          "writable": true
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "id",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "conditions",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "Condition"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "execute_split",
+      "discriminator": [
+        6,
+        45,
+        171,
+        40,
+        49,
+        129,
+        23,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "condition_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "raise_dispute",
+      "discriminator": [
+        41,
+        243,
+        1,
+        51,
+        150,
+        95,
+        246,
+        73
+      ],
+      "accounts": [
+        {
+          "name": "plaintiff",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "dispute",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  105,
+                  115,
+                  112,
+                  117,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "reason",
+          "type": "string"
+        },
+        {
+          "name": "jurors",
+          "type": {
+            "vec": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "register_merchant",
+      "discriminator": [
+        238,
+        245,
+        77,
+        132,
+        161,
+        88,
+        216,
+        248
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "merchant",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "release_time_lock",
+      "discriminator": [
+        32,
+        142,
+        7,
+        14,
+        12,
+        25,
+        56,
+        114
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "condition_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "trigger_oracle",
+      "discriminator": [
+        10,
+        11,
+        71,
+        111,
+        76,
+        119,
+        255,
+        6
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "oracle_feed"
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "condition_index",
+          "type": "u8"
+        },
+        {
+          "name": "observed_value",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "vote_dispute",
+      "discriminator": [
+        23,
+        190,
+        211,
+        170,
+        65,
+        223,
+        4,
+        243
+      ],
+      "accounts": [
+        {
+          "name": "juror",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "dispute",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  105,
+                  115,
+                  112,
+                  117,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "creator_token_account",
+          "writable": true
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "vote_for_plaintiff",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Dispute",
+      "discriminator": [
+        36,
+        49,
+        241,
+        67,
+        40,
+        36,
+        241,
+        74
+      ]
+    },
+    {
+      "name": "MerchantRegistry",
+      "discriminator": [
+        30,
+        206,
+        224,
+        3,
+        61,
+        48,
+        215,
+        115
+      ]
+    },
+    {
+      "name": "PaymentVault",
+      "discriminator": [
+        198,
+        111,
+        51,
+        64,
+        219,
+        236,
+        208,
+        239
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "DisputeRaised",
+      "discriminator": [
+        246,
+        167,
+        109,
+        37,
+        142,
+        45,
+        38,
+        176
+      ]
+    },
+    {
+      "name": "DisputeResolved",
+      "discriminator": [
+        121,
+        64,
+        249,
+        153,
+        139,
+        128,
+        236,
+        187
+      ]
+    },
+    {
+      "name": "FundsReleased",
+      "discriminator": [
+        178,
+        119,
+        252,
+        230,
+        131,
+        104,
+        210,
+        210
+      ]
+    },
+    {
+      "name": "MilestoneApproved",
+      "discriminator": [
+        40,
+        109,
+        159,
+        144,
+        169,
+        230,
+        35,
+        229
+      ]
+    },
+    {
+      "name": "OracleTriggered",
+      "discriminator": [
+        90,
+        150,
+        7,
+        10,
+        236,
+        101,
+        75,
+        61
+      ]
+    },
+    {
+      "name": "SplitExecuted",
+      "discriminator": [
+        147,
+        176,
+        193,
+        145,
+        52,
+        30,
+        166,
+        53
+      ]
+    },
+    {
+      "name": "VaultCreated",
+      "discriminator": [
+        117,
+        25,
+        120,
+        254,
+        75,
+        236,
+        78,
+        115
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds"
+    },
+    {
+      "code": 6001,
+      "name": "ConditionNotMet",
+      "msg": "Condition not met"
+    },
+    {
+      "code": 6002,
+      "name": "UnauthorizedApprover",
+      "msg": "Unauthorized approver"
+    },
+    {
+      "code": 6003,
+      "name": "VaultNotActive",
+      "msg": "Vault is not active"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidPercentages",
+      "msg": "Invalid percentages"
+    },
+    {
+      "code": 6005,
+      "name": "TimeLockNotExpired",
+      "msg": "Time lock has not expired"
+    },
+    {
+      "code": 6006,
+      "name": "AlreadyApproved",
+      "msg": "Already approved"
+    },
+    {
+      "code": 6007,
+      "name": "DisputeExpired",
+      "msg": "Dispute expired"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidOracleValue",
+      "msg": "Invalid oracle value"
+    },
+    {
+      "code": 6009,
+      "name": "MaxConditionsExceeded",
+      "msg": "Maximum conditions exceeded"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidSplitTotal",
+      "msg": "Invalid split total"
+    }
+  ],
+  "types": [
+    {
+      "name": "ComparisonOperator",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "LessThan"
+          },
+          {
+            "name": "GreaterThan"
+          },
+          {
+            "name": "Equal"
+          },
+          {
+            "name": "LessThanOrEqual"
+          },
+          {
+            "name": "GreaterThanOrEqual"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Condition",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TimeLock",
+            "fields": [
+              {
+                "name": "release_time",
+                "type": "i64"
+              },
+              {
+                "name": "percentage",
+                "type": "u8"
+              }
+            ]
+          },
+          {
+            "name": "MilestoneApproval",
+            "fields": [
+              {
+                "name": "description",
+                "type": "string"
+              },
+              {
+                "name": "required_approvers",
+                "type": {
+                  "vec": "pubkey"
+                }
+              },
+              {
+                "name": "approvals_received",
+                "type": {
+                  "vec": "pubkey"
+                }
+              },
+              {
+                "name": "percentage",
+                "type": "u8"
+              },
+              {
+                "name": "completed",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "AutoSplit",
+            "fields": [
+              {
+                "name": "splits",
+                "type": {
+                  "vec": {
+                    "defined": {
+                      "name": "SplitRecipient"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "OracleTrigger",
+            "fields": [
+              {
+                "name": "oracle_feed",
+                "type": "pubkey"
+              },
+              {
+                "name": "operator",
+                "type": {
+                  "defined": {
+                    "name": "ComparisonOperator"
+                  }
+                }
+              },
+              {
+                "name": "threshold",
+                "type": "i64"
+              },
+              {
+                "name": "percentage",
+                "type": "u8"
+              },
+              {
+                "name": "triggered",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "CategoryRestrict",
+            "fields": [
+              {
+                "name": "merchant_registry",
+                "type": "pubkey"
+              },
+              {
+                "name": "allowed_categories",
+                "type": {
+                  "vec": "string"
+                }
+              },
+              {
+                "name": "percentage",
+                "type": "u8"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Dispute",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "plaintiff",
+            "type": "pubkey"
+          },
+          {
+            "name": "defendant",
+            "type": "pubkey"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          },
+          {
+            "name": "jurors",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "votes_for_plaintiff",
+            "type": "u8"
+          },
+          {
+            "name": "votes_for_defendant",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "DisputeStatus"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DisputeRaised",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "plaintiff",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DisputeResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dispute",
+            "type": "pubkey"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DisputeStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Voting"
+          },
+          {
+            "name": "ResolvedForPlaintiff"
+          },
+          {
+            "name": "ResolvedForDefendant"
+          },
+          {
+            "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FundsReleased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "condition_type",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MerchantRegistry",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "merchants",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneApproved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "approver",
+            "type": "pubkey"
+          },
+          {
+            "name": "milestone_index",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleTriggered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "feed",
+            "type": "pubkey"
+          },
+          {
+            "name": "value",
+            "type": "i64"
+          },
+          {
+            "name": "threshold",
+            "type": "i64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PaymentVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "released_amount",
+            "type": "u64"
+          },
+          {
+            "name": "conditions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Condition"
+                }
+              }
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "VaultStatus"
+              }
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "updated_at",
+            "type": "i64"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SplitExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "recipients",
+            "type": "u8"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SplitRecipient",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "percentage",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "PartiallyReleased"
+          },
+          {
+            "name": "Released"
+          },
+          {
+            "name": "Disputed"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    }
+  ]
+}

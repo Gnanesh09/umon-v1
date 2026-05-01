@@ -1,0 +1,13 @@
+[features]
+seeds = false
+skip-lint = false
+
+[programs.devnet]
+powermoney = "HWgSd3Dd67ypxPYToXYATipRdcoPb3SJAc1EYyJyLoFg"
+
+[provider]
+cluster = "Devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "pnpm ts-mocha -p ./tsconfig.json -t 1200000 tests/**/*.ts"

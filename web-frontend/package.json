@@ -1,0 +1,45 @@
+{
+  "name": "@powermoney/web-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@hookform/resolvers": "^3.9.0",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-phantom": "^0.9.28",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/wallet-adapter-solflare": "^0.6.32",
+    "@solana/web3.js": "^1.95.4",
+    "@tanstack/react-query": "^5.59.16",
+    "axios": "^1.7.7",
+    "bs58": "^6.0.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.11.11",
+    "lucide-react": "^0.453.0",
+    "next": "16.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.53.2",
+    "recharts": "^2.13.3",
+    "sonner": "^1.7.1",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.6",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
