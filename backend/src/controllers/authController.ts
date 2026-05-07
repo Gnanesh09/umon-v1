@@ -55,9 +55,18 @@ export async function verifySignature(req: Request, res: Response): Promise<Resp
     throw new AppError("DATABASE_ERROR", "Failed to upsert user", 500, { details: error.message });
   }
 
+  // Fetch role separately (column may not exist yet if migration hasn't run)
+  let role = "user";
+  try {
+    const { data: userData } = await supabase.from("users").select("role").eq("wallet_address", walletAddress).single();
+    if (userData?.role) role = userData.role as string;
+  } catch {
+    // role column doesn't exist yet — default to "user"
+  }
+
   nonceStore.delete(walletAddress);
 
-  return sendSuccess(res, 200, { token, expiresIn: 86400 });
+  return sendSuccess(res, 200, { token, expiresIn: 86400, role });
 }
 
 export async function me(req: AuthenticatedRequest, res: Response): Promise<Response> {

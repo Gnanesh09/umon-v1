@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { adminRouter } from "./adminRoutes.js";
 import { analyticsRouter } from "./analyticsRoutes.js";
 import { authRouter } from "./authRoutes.js";
 import { feeRouter } from "./feeRoutes.js";
@@ -16,3 +17,4 @@ apiRouter.use("/analytics", analyticsRouter);
 apiRouter.use("/notifications", notificationRouter);
 apiRouter.use("/transactions", transactionRouter);
 apiRouter.use("/fees", feeRouter);
+apiRouter.use("/admin", adminRouter);

@@ -16,7 +16,10 @@
       "Bash(node -e \"console.log\\('Node OK'\\)\")",
       "Bash(npm view *)",
       "Bash(pnpm *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(netstat -ano)",
+      "Bash(powershell.exe -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

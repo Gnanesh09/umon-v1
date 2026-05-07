@@ -435,6 +435,50 @@ pub fn execute_split<'info>(
         Ok(())
     }
 
+    pub fn release_category_restrict(ctx: Context<ReleaseFunds>, condition_index: u8) -> Result<()> {
+        let now: i64 = Clock::get()?.unix_timestamp;
+        let (vault_key, recipient, release_amount) = {
+            let vault: &mut Account<PaymentVault> = &mut ctx.accounts.vault;
+            require!(vault.status == VaultStatus::Active || vault.status == VaultStatus::PartiallyReleased, PowerMoneyError::VaultNotActive);
+
+            let idx = usize::from(condition_index);
+            require!(idx < vault.conditions.len(), PowerMoneyError::ConditionNotMet);
+            let total_amount = vault.amount;
+
+            let release_amount = match &mut vault.conditions[idx] {
+                Condition::CategoryRestrict { percentage, .. } => {
+                    require!(*percentage > 0, PowerMoneyError::ConditionNotMet);
+                    let amount = percentage_to_amount(total_amount, *percentage)?;
+                    *percentage = 0;
+                    amount
+                }
+                _ => return err!(PowerMoneyError::ConditionNotMet),
+            };
+
+            apply_release_state(vault, release_amount, now);
+            (vault.key(), vault.recipient, release_amount)
+        };
+
+        transfer_from_vault(
+            release_amount,
+            vault_key,
+            &ctx.accounts.vault_token_account,
+            &ctx.accounts.recipient_token_account.to_account_info(),
+            &ctx.accounts.vault_authority,
+            &ctx.accounts.token_program,
+        )?;
+
+        emit!(FundsReleased {
+            vault: vault_key,
+            recipient,
+            amount: release_amount,
+            condition_type: "CategoryRestrict".to_string(),
+            timestamp: now,
+        });
+
+        Ok(())
+    }
+
     pub fn register_merchant(ctx: Context<RegisterMerchant>, merchant: Pubkey) -> Result<()> {
         let registry: &mut Account<MerchantRegistry> = &mut ctx.accounts.registry;
         require!(registry.admin == ctx.accounts.admin.key(), PowerMoneyError::UnauthorizedApprover);

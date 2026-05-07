@@ -1,5 +1,5 @@
 import { Keypair, PublicKey } from "@solana/web3.js";
-import { AnchorProvider, BN, Program, type Idl } from "@coral-xyz/anchor";
+import { AnchorProvider, Program, type Idl } from "@coral-xyz/anchor";
 import {
   TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
@@ -11,7 +11,7 @@ import { env } from "../config/env.js";
 import { connection, programId } from "../lib/solana.js";
 import { supabase } from "../lib/supabase.js";
 import { logger } from "../lib/logger.js";
-import { NotificationService } from "./NotificationService.js";
+import { ReceiptService } from "./ReceiptService.js";
 import * as fs from "fs";
 
 const USDC_DEVNET_MINT = new PublicKey(
@@ -35,7 +35,7 @@ export class AutoReleaserService {
   private keypair: Keypair | null = null;
   private provider: AnchorProvider | null = null;
   private program: Program | null = null;
-  private notificationService = new NotificationService();
+  private receiptService = new ReceiptService();
 
   async start(): Promise<void> {
     if (!env.AUTHORITY_KEYPAIR) {
@@ -200,6 +200,17 @@ export class AutoReleaserService {
       .update({ released_amount_usdc: newReleased, status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", vault.id);
 
+    this.receiptService.create({
+      vaultId: vault.id,
+      walletAddress: vault.creator_wallet,
+      txSignature: sig,
+      receiptType: "funds_released",
+      amountUsdc: releaseAmount,
+      recipientWallet: vault.recipient_wallet,
+      description: `Auto-released time-lock condition #${conditionIndex}`,
+      metadata: { conditionIndex, conditionType: "time_lock", auto: true },
+    }).catch((e) => logger.error({ err: e }, "Failed to create auto-release receipt"));
+
     logger.info({ vaultId: vault.id, sig, amount: releaseAmount }, "Time-lock auto-released");
   }
 
@@ -255,6 +266,17 @@ export class AutoReleaserService {
       .from("vaults")
       .update({ status: "released", updated_at: new Date().toISOString() })
       .eq("id", vault.id);
+
+    this.receiptService.create({
+      vaultId: vault.id,
+      walletAddress: vault.creator_wallet,
+      txSignature: sig,
+      receiptType: "split_executed",
+      amountUsdc: Number(vault.amount_usdc),
+      recipientWallet: vault.recipient_wallet,
+      description: `Auto-executed split condition #${conditionIndex}`,
+      metadata: { conditionIndex, conditionType: "auto_split", auto: true, splits },
+    }).catch((e) => logger.error({ err: e }, "Failed to create auto-split receipt"));
 
     logger.info({ vaultId: vault.id, sig }, "Auto-split executed");
   }

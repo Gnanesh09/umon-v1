@@ -21,8 +21,11 @@ export type ApiError = {
   };
 };
 
+export type UserRole = "user" | "merchant" | "admin";
+
 export type AuthUser = {
   walletAddress: string;
+  role?: UserRole;
 };
 
 export type AuthenticatedRequest = Request & {

@@ -436,6 +436,79 @@
       ]
     },
     {
+      "name": "release_category_restrict",
+      "discriminator": [
+        22,
+        103,
+        60,
+        9,
+        224,
+        204,
+        163,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "vault",
+          "writable": true
+        },
+        {
+          "name": "vault_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "vault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_token_account",
+          "writable": true
+        },
+        {
+          "name": "recipient_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "condition_index",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "release_time_lock",
       "discriminator": [
         32,
@@ -1041,6 +1114,12 @@
           },
           {
             "name": "jurors",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "voters",
             "type": {
               "vec": "pubkey"
             }

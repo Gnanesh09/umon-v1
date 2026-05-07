@@ -19,6 +19,7 @@ const envSchema = z.object({
   TREASURY_WALLET: z.string().optional().default(""),
   FEE_PERCENTAGE: z.coerce.number().optional().default(0.5),
   FEE_MIN_USDC: z.coerce.number().optional().default(10000),
+  ADMIN_CODE: z.string().optional().default("0902"),
 });
 
 export const env = envSchema.parse(process.env);

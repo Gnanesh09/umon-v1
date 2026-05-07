@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Sidebar } from "@/components/organisms/Sidebar";
 import { CommandPalette } from "@/components/molecules/CommandPalette";
 import { useAuth } from "@/hooks/useAuth";
