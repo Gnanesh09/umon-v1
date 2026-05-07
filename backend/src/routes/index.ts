@@ -7,6 +7,12 @@ import { merchantRouter } from "./merchantRoutes.js";
 import { notificationRouter } from "./notificationRoutes.js";
 import { transactionRouter } from "./transactionRoutes.js";
 import { vaultRouter } from "./vaultRoutes.js";
+import { paymentLinkRouter } from "./paymentLinkRoutes.js";
+import { paymentSessionRouter } from "./paymentSessionRoutes.js";
+import { invoiceRouter } from "./invoiceRoutes.js";
+import { refundRouter } from "./refundRoutes.js";
+import { qrRouter } from "./qrRoutes.js";
+import { developerRouter } from "./developerRoutes.js";
 
 export const apiRouter = Router();
 
@@ -18,3 +24,9 @@ apiRouter.use("/notifications", notificationRouter);
 apiRouter.use("/transactions", transactionRouter);
 apiRouter.use("/fees", feeRouter);
 apiRouter.use("/admin", adminRouter);
+apiRouter.use("/payment-links", paymentLinkRouter);
+apiRouter.use("/payment-sessions", paymentSessionRouter);
+apiRouter.use("/invoices", invoiceRouter);
+apiRouter.use("/refunds", refundRouter);
+apiRouter.use("/qr", qrRouter);
+apiRouter.use("/developer", developerRouter);

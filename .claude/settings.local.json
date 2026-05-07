@@ -19,7 +19,12 @@
       "Bash(npm run *)",
       "Bash(netstat -ano)",
       "Bash(powershell.exe -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "WebSearch",
+      "Bash(mkdir -p \"D:/GNANESH_PROJECTS/POWERMONEY/web-frontend/app/pay/[code]\")"
+    ],
+    "additionalDirectories": [
+      "D:\\GNANESH_PROJECTS\\POWERMONEY\\web-frontend\\app\\pay"
     ]
   }
 }

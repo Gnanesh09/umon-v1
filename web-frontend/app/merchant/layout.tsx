@@ -16,6 +16,9 @@ import {
   ArrowLeft,
   Menu,
   X,
+  Link2,
+  FileText,
+  Code2,
 } from "lucide-react";
 
 const navItems = [
@@ -23,6 +26,9 @@ const navItems = [
   { href: "/merchant/businesses", label: "My Businesses", icon: Store, exact: false },
   { href: "/merchant/register", label: "Register Business", icon: PlusCircle, exact: false },
   { href: "/merchant/payments", label: "Payments", icon: CreditCard, exact: false },
+  { href: "/merchant/payment-links", label: "Payment Links", icon: Link2, exact: false },
+  { href: "/merchant/invoices", label: "Invoices", icon: FileText, exact: false },
+  { href: "/merchant/developer", label: "Developer", icon: Code2, exact: false },
   { href: "/merchant/settings", label: "Settings", icon: Settings, exact: false },
 ];
 

@@ -12,11 +12,13 @@ import {
   BarChart3,
   Receipt,
   Settings,
+  QrCode,
 } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/dashboard/create", label: "Create Payment", icon: Plus },
+  { href: "/dashboard/receive", label: "Receive", icon: QrCode },
   { href: "/dashboard/vaults", label: "Vaults", icon: Vault },
   { href: "/dashboard/merchants", label: "Merchants", icon: Store },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
