@@ -134,8 +134,10 @@ export class PaymentLinkService {
     if (updates.title !== undefined) allowed.title = updates.title;
     if (updates.description !== undefined) allowed.description = updates.description;
     if (updates.amountUsdc !== undefined) allowed.amount_usdc = updates.amountUsdc;
+    if (updates.recipientWallet !== undefined) allowed.recipient_wallet = updates.recipientWallet;
     if (updates.maxUses !== undefined) allowed.max_uses = updates.maxUses;
     if (updates.expiresAt !== undefined) allowed.expires_at = updates.expiresAt;
+    if ((updates as Record<string, unknown>).isActive !== undefined) allowed.is_active = (updates as Record<string, unknown>).isActive;
 
     const { data, error } = await supabase
       .from("payment_links")

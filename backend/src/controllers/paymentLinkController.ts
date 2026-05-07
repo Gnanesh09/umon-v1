@@ -102,6 +102,7 @@ export async function updatePaymentLink(req: AuthenticatedRequest, res: Response
     title?: string;
     description?: string;
     amountUsdc?: number;
+    recipientWallet?: string;
     maxUses?: number;
     expiresAt?: string;
   };

@@ -11,7 +11,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }): 
   return (
     <div className="grid h-full md:grid-cols-[240px_1fr]">
       <Sidebar />
-      <main className="scroll-region h-full pb-16 md:pb-0">{children}</main>
+      <main className="scroll-region h-full bg-gray-50 pb-16 text-gray-900 md:pb-0">{children}</main>
       <CommandPalette />
     </div>
   );
