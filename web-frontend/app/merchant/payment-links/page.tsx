@@ -190,8 +190,8 @@ export default function PaymentLinksPage(): ReactNode {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-cabinet text-2xl font-bold text-gray-900">Payment Links</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Payment Links</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             Create, manage, and track payment links for your business.
           </p>
         </div>
@@ -217,12 +217,12 @@ export default function PaymentLinksPage(): ReactNode {
               icon: DollarSign,
             },
           ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="rounded-xl border border-gray-200 bg-white p-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div key={label} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-faint)]">
                 <Icon size={12} />
                 {label}
               </div>
-              <p className="mt-1 text-xl font-bold text-gray-900">{value}</p>
+              <p className="mt-1 text-xl font-bold text-[var(--text)]">{value}</p>
             </div>
           ))}
         </div>
@@ -231,15 +231,15 @@ export default function PaymentLinksPage(): ReactNode {
       {/* Create / Edit Modal */}
       {(modal === "create" || modal === "edit") && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-0 shadow-2xl">
+          <div className="w-full max-w-lg rounded-2xl bg-[var(--surface)] p-0 shadow-2xl">
             {/* Modal header */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-              <h2 className="text-lg font-bold text-gray-900">
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+              <h2 className="text-lg font-bold text-[var(--text)]">
                 {modal === "edit" ? "Edit Payment Link" : "New Payment Link"}
               </h2>
               <button
                 onClick={closeModal}
-                className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-lg p-1.5 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
               >
                 <X size={18} />
               </button>
@@ -248,86 +248,86 @@ export default function PaymentLinksPage(): ReactNode {
             {/* Modal body */}
             <div className="space-y-4 px-6 py-5">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
                   Title <span className="text-red-400">*</span>
                 </label>
                 <input
                   value={form.title}
                   onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-[var(--surface)] focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="e.g. Coffee Payment"
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-600">Description</label>
+                <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">Description</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
                   rows={2}
-                  className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                  className="w-full resize-none rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-[var(--surface)] focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Optional description for your customers"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
                     Amount (USDC)
                   </label>
                   <div className="relative">
-                    <DollarSign size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <DollarSign size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
                     <input
                       type="number"
                       step="0.01"
                       value={form.amountUsdc}
                       onChange={(e) => setForm((p) => ({ ...p, amountUsdc: e.target.value }))}
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-9 pr-4 text-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] py-3 pl-9 pr-4 text-sm outline-none transition focus:border-emerald-500 focus:bg-[var(--surface)] focus:ring-2 focus:ring-emerald-500/20"
                       placeholder="Flexible"
                     />
                   </div>
-                  <p className="mt-1 text-[10px] text-gray-400">Leave blank for flexible amount</p>
+                  <p className="mt-1 text-[10px] text-[var(--text-faint)]">Leave blank for flexible amount</p>
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                  <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
                     Max Uses
                   </label>
                   <div className="relative">
-                    <Users size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Users size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
                     <input
                       type="number"
                       value={form.maxUses}
                       onChange={(e) => setForm((p) => ({ ...p, maxUses: e.target.value }))}
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-9 pr-4 text-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                      className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] py-3 pl-9 pr-4 text-sm outline-none transition focus:border-emerald-500 focus:bg-[var(--surface)] focus:ring-2 focus:ring-emerald-500/20"
                       placeholder="Unlimited"
                     />
                   </div>
-                  <p className="mt-1 text-[10px] text-gray-400">Leave blank for unlimited</p>
+                  <p className="mt-1 text-[10px] text-[var(--text-faint)]">Leave blank for unlimited</p>
                 </div>
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-600">
+                <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
                   Recipient Wallet
                 </label>
                 <div className="relative">
-                  <Wallet size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Wallet size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-faint)]" />
                   <input
                     value={form.recipientWallet}
                     onChange={(e) => setForm((p) => ({ ...p, recipientWallet: e.target.value }))}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-9 pr-4 font-mono text-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100"
+                    className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] py-3 pl-9 pr-4 font-mono text-sm outline-none transition focus:border-emerald-500 focus:bg-[var(--surface)] focus:ring-2 focus:ring-emerald-500/20"
                     placeholder={user?.walletAddress ?? "Your wallet address"}
                   />
                 </div>
-                <p className="mt-1 text-[10px] text-gray-400">Defaults to your connected wallet</p>
+                <p className="mt-1 text-[10px] text-[var(--text-faint)]">Defaults to your connected wallet</p>
               </div>
             </div>
 
             {/* Modal footer */}
-            <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-6 py-4">
+            <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-6 py-4">
               <button
                 onClick={closeModal}
-                className="rounded-xl px-5 py-2.5 text-sm font-medium text-gray-500 transition hover:bg-gray-100"
+                className="rounded-xl px-5 py-2.5 text-sm font-medium text-[var(--text-muted)] transition hover:bg-[var(--surface-3)]"
               >
                 Cancel
               </button>
@@ -353,12 +353,12 @@ export default function PaymentLinksPage(): ReactNode {
       {/* QR Modal */}
       {modal === "qr" && qrLink && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-sm rounded-2xl bg-[var(--surface)] p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">QR Code</h2>
+              <h2 className="text-lg font-bold text-[var(--text)]">QR Code</h2>
               <button
                 onClick={closeModal}
-                className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-lg p-1.5 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
               >
                 <X size={18} />
               </button>
@@ -370,7 +370,7 @@ export default function PaymentLinksPage(): ReactNode {
             />
             <button
               onClick={() => copyUrl(qrLink)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] py-2.5 text-sm font-medium text-[var(--text)] transition hover:bg-[var(--surface-2)]"
             >
               <Copy size={14} />
               Copy Link URL
@@ -382,13 +382,13 @@ export default function PaymentLinksPage(): ReactNode {
       {/* Links List */}
       {linksQuery.isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-gray-400" size={24} />
+          <Loader2 className="animate-spin text-[var(--text-faint)]" size={24} />
         </div>
       ) : links.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 py-20 text-center">
-          <LinkIcon size={40} className="mx-auto mb-3 text-gray-300" />
-          <p className="font-medium text-gray-500">No payment links yet</p>
-          <p className="mt-1 text-sm text-gray-400">Create your first link to start accepting payments.</p>
+        <div className="rounded-2xl border border-dashed border-[var(--border-strong)] py-20 text-center">
+          <LinkIcon size={40} className="mx-auto mb-3 text-[var(--text-faint)]" />
+          <p className="font-medium text-[var(--text-muted)]">No payment links yet</p>
+          <p className="mt-1 text-sm text-[var(--text-faint)]">Create your first link to start accepting payments.</p>
           <button
             onClick={openCreate}
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
@@ -423,7 +423,7 @@ export default function PaymentLinksPage(): ReactNode {
             <>
               <div className="flex items-center gap-3 pt-4">
                 <div className="h-px flex-1 bg-gray-200" />
-                <span className="text-xs font-medium text-gray-400">
+                <span className="text-xs font-medium text-[var(--text-faint)]">
                   Inactive ({inactiveLinks.length})
                 </span>
                 <div className="h-px flex-1 bg-gray-200" />
@@ -477,39 +477,39 @@ function LinkCard({
 
   return (
     <div
-      className={`group rounded-xl border bg-white transition ${
+      className={`group rounded-xl border bg-[var(--surface)] transition ${
         link.is_active
-          ? "border-gray-200 hover:border-gray-300 hover:shadow-md"
-          : "border-gray-100 opacity-60 hover:opacity-80"
+          ? "border-[var(--border)] hover:border-[var(--border-strong)] hover:shadow-md"
+          : "border-[var(--border)] opacity-60 hover:opacity-80"
       }`}
     >
       <div className="flex items-start gap-4 p-5">
         {/* Icon */}
         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-          link.is_active ? "bg-emerald-50" : "bg-gray-100"
+          link.is_active ? "bg-emerald-500/10" : "bg-[var(--surface-3)]"
         }`}>
-          <Link2 size={18} className={link.is_active ? "text-emerald-600" : "text-gray-400"} />
+          <Link2 size={18} className={link.is_active ? "text-emerald-400" : "text-[var(--text-faint)]"} />
         </div>
 
         {/* Main info */}
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate text-sm font-semibold text-gray-900">{link.title}</h3>
+            <h3 className="truncate text-sm font-semibold text-[var(--text)]">{link.title}</h3>
             <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
               link.is_active
-                ? "bg-emerald-50 text-emerald-600"
-                : "bg-gray-100 text-gray-500"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "bg-[var(--surface-3)] text-[var(--text-muted)]"
             }`}>
               {link.is_active ? "Active" : "Inactive"}
             </span>
           </div>
 
           {link.description && (
-            <p className="mt-0.5 truncate text-xs text-gray-500">{link.description}</p>
+            <p className="mt-0.5 truncate text-xs text-[var(--text-muted)]">{link.description}</p>
           )}
 
           {/* Meta row */}
-          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--text-faint)]">
             <span className="inline-flex items-center gap-1">
               <DollarSign size={11} />
               {link.amount_usdc ? `$${(link.amount_usdc / 1_000_000).toFixed(2)}` : "Flexible"}
@@ -533,12 +533,12 @@ function LinkCard({
 
           {/* URL preview */}
           <div className="mt-2.5 flex items-center gap-2">
-            <code className="truncate rounded-lg bg-gray-50 px-2.5 py-1 text-[11px] text-gray-500">
+            <code className="truncate rounded-lg bg-[var(--surface-2)] px-2.5 py-1 text-[11px] text-[var(--text-muted)]">
               {url}
             </code>
             <button
               onClick={() => onCopy(link)}
-              className="shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+              className="shrink-0 rounded-lg p-1.5 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
             >
               {copied === link.id ? (
                 <Check size={13} className="text-emerald-500" />
@@ -553,14 +553,14 @@ function LinkCard({
         <div className="relative flex shrink-0 items-center gap-1">
           <button
             onClick={() => onEdit(link)}
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-2 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
             title="Edit"
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onQr(link)}
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-2 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
             title="QR Code"
           >
             <QrCode size={15} />
@@ -571,44 +571,44 @@ function LinkCard({
                 e.stopPropagation();
                 onMenuToggle(link.id);
               }}
-              className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-lg p-2 text-[var(--text-faint)] transition hover:bg-[var(--surface-3)] hover:text-[var(--text-muted)]"
             >
               <MoreHorizontal size={15} />
             </button>
 
             {/* Dropdown */}
             {menuOpen === link.id && (
-              <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-xl">
+              <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] py-1 shadow-xl">
                 <a
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 transition hover:bg-gray-50"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-muted)] transition hover:bg-[var(--surface-2)]"
                 >
                   <ExternalLink size={14} />
                   Open Checkout
                 </a>
                 <button
                   onClick={() => onCopy(link)}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 transition hover:bg-gray-50"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-muted)] transition hover:bg-[var(--surface-2)]"
                 >
                   <Copy size={14} />
                   Copy Link
                 </button>
-                <div className="my-1 border-t border-gray-100" />
+                <div className="my-1 border-t border-[var(--border)]" />
                 <button
                   onClick={() => onToggle(link.id, !link.is_active)}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-gray-50"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-[var(--surface-2)]"
                 >
                   {link.is_active ? (
                     <>
                       <ToggleLeft size={14} className="text-red-400" />
-                      <span className="text-red-500">Deactivate</span>
+                      <span className="text-red-400">Deactivate</span>
                     </>
                   ) : (
                     <>
                       <ToggleRight size={14} className="text-emerald-500" />
-                      <span className="text-emerald-600">Reactivate</span>
+                      <span className="text-emerald-400">Reactivate</span>
                     </>
                   )}
                 </button>

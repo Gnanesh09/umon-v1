@@ -33,11 +33,11 @@ type Invoice = {
 };
 
 const STATUS_STYLES: Record<string, { icon: typeof CheckCircle2; color: string; bg: string }> = {
-  draft: { icon: Clock, color: "text-gray-600", bg: "bg-gray-100" },
+  draft: { icon: Clock, color: "text-[var(--text-muted)]", bg: "bg-[var(--surface-3)]" },
   sent: { icon: Send, color: "text-blue-600", bg: "bg-blue-50" },
-  paid: { icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
-  overdue: { icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
-  cancelled: { icon: XCircle, color: "text-red-500", bg: "bg-red-50" },
+  paid: { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  overdue: { icon: AlertTriangle, color: "text-amber-400", bg: "bg-amber-500/10" },
+  cancelled: { icon: XCircle, color: "text-red-400", bg: "bg-red-500/10" },
 };
 
 export default function InvoicesPage(): ReactNode {
@@ -96,8 +96,8 @@ export default function InvoicesPage(): ReactNode {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-cabinet text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="mt-1 text-sm text-gray-500">Create and manage invoices for your customers.</p>
+          <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Invoices</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Create and manage invoices for your customers.</p>
         </div>
         <Link
           href="/merchant/invoices/create"
@@ -110,55 +110,55 @@ export default function InvoicesPage(): ReactNode {
 
       {/* Stats */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Total Billed</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm text-[var(--text-muted)]">Total Billed</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--text)]">
             ${(totalBilled / 1_000_000).toFixed(2)}
           </p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Total Collected</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-600">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm text-[var(--text-muted)]">Total Collected</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-400">
             ${(totalPaid / 1_000_000).toFixed(2)}
           </p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Invoices</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{invoices.length}</p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm text-[var(--text-muted)]">Invoices</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--text)]">{invoices.length}</p>
         </div>
       </div>
 
       {/* Invoice List */}
       {invoicesQuery.isLoading || merchantQuery.isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="animate-spin text-gray-400" size={24} />
+          <Loader2 className="animate-spin text-[var(--text-faint)]" size={24} />
         </div>
       ) : invoices.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 py-16 text-center">
-          <FileText size={40} className="mx-auto mb-3 text-gray-300" />
-          <p className="text-gray-500">No invoices yet</p>
-          <p className="mt-1 text-xs text-gray-400">Create your first invoice to start billing.</p>
+        <div className="rounded-xl border border-dashed border-[var(--border-strong)] py-16 text-center">
+          <FileText size={40} className="mx-auto mb-3 text-[var(--text-faint)]" />
+          <p className="text-[var(--text-muted)]">No invoices yet</p>
+          <p className="mt-1 text-xs text-[var(--text-faint)]">Create your first invoice to start billing.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)]">
           <div className="divide-y divide-gray-100">
             {invoices.map((inv) => {
               const style = STATUS_STYLES[inv.status] ?? STATUS_STYLES.draft;
               const Icon = style.icon;
               return (
-                <div key={inv.id} className="flex items-center justify-between px-5 py-4 transition hover:bg-gray-50">
+                <div key={inv.id} className="flex items-center justify-between px-5 py-4 transition hover:bg-[var(--surface-2)]">
                   <div className="flex items-center gap-3">
                     <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${style.bg}`}>
                       <Icon size={18} className={style.color} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-gray-900">{inv.invoice_number}</p>
+                        <p className="text-sm font-semibold text-[var(--text)]">{inv.invoice_number}</p>
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${style.bg} ${style.color}`}>
                           {inv.status}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-[var(--text-faint)]">
                         {inv.customer_name ?? "No customer"} &middot;{" "}
                         {inv.line_items.length} item{inv.line_items.length !== 1 ? "s" : ""} &middot;{" "}
                         {new Date(inv.created_at).toLocaleDateString()}
@@ -166,7 +166,7 @@ export default function InvoicesPage(): ReactNode {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <p className="text-sm font-bold text-gray-900">
+                    <p className="text-sm font-bold text-[var(--text)]">
                       ${(inv.total_usdc / 1_000_000).toFixed(2)}
                     </p>
                     <div className="flex items-center gap-1">
@@ -183,7 +183,7 @@ export default function InvoicesPage(): ReactNode {
                           <button
                             onClick={() => cancelMut.mutate(inv.id)}
                             disabled={cancelMut.isPending}
-                            className="rounded-lg p-2 text-red-400 transition hover:bg-red-50"
+                            className="rounded-lg p-2 text-red-400 transition hover:bg-red-500/100/10"
                             title="Cancel"
                           >
                             <XCircle size={14} />
@@ -194,7 +194,7 @@ export default function InvoicesPage(): ReactNode {
                         <button
                           onClick={() => cancelMut.mutate(inv.id)}
                           disabled={cancelMut.isPending}
-                          className="rounded-lg p-2 text-red-400 transition hover:bg-red-50"
+                          className="rounded-lg p-2 text-red-400 transition hover:bg-red-500/100/10"
                           title="Cancel"
                         >
                           <XCircle size={14} />

@@ -53,11 +53,11 @@ export default function MerchantsPage(): ReactNode {
       <Header title="Merchants" />
       <div className="p-6">
         {/* Info Banner */}
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
-          <Store size={20} className="text-indigo-600" />
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/[0.06] p-4">
+          <Store size={20} className="text-indigo-400" />
           <div>
-            <p className="text-sm font-medium text-indigo-900">Want to become a merchant?</p>
-            <p className="text-xs text-indigo-600">
+            <p className="text-sm font-medium text-[var(--text)]">Want to become a merchant?</p>
+            <p className="text-xs text-indigo-400">
               <Link href="/merchant" className="underline hover:no-underline">Visit the Merchant Portal</Link> to register your business and start accepting payments.
             </p>
           </div>

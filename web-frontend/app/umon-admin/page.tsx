@@ -22,15 +22,15 @@ function StatCard({ label, value, sub, icon: Icon, color }: {
   color: string;
 }): ReactNode {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-500">{label}</p>
+        <p className="text-sm font-medium text-[var(--text-muted)]">{label}</p>
         <div className={`rounded-lg p-2 ${color}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="mt-2 text-2xl font-bold text-gray-900">{value}</p>
-      {sub ? <p className="mt-1 text-xs text-gray-400">{sub}</p> : null}
+      <p className="mt-2 text-2xl font-bold text-[var(--text)]">{value}</p>
+      {sub ? <p className="mt-1 text-xs text-[var(--text-faint)]">{sub}</p> : null}
     </div>
   );
 }
@@ -54,14 +54,14 @@ export default function AdminOverviewPage(): ReactNode {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500">Platform overview and key metrics</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">Dashboard</h1>
+        <p className="text-sm text-[var(--text-muted)]">Platform overview and key metrics</p>
       </div>
 
       {statsQuery.isLoading ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 animate-pulse rounded-xl border border-gray-200 bg-gray-100" />
+            <div key={i} className="h-28 animate-pulse rounded-xl border border-[var(--border)] bg-[var(--surface-3)]" />
           ))}
         </div>
       ) : stats ? (
@@ -70,20 +70,20 @@ export default function AdminOverviewPage(): ReactNode {
             label="Total Users"
             value={stats.totalUsers}
             icon={Users}
-            color="bg-blue-50 text-blue-600"
+            color="bg-blue-500/10 text-blue-400"
           />
           <StatCard
             label="Approved Merchants"
             value={stats.totalMerchants}
             sub={stats.pendingMerchants > 0 ? `${stats.pendingMerchants} pending review` : undefined}
             icon={Store}
-            color="bg-emerald-50 text-emerald-600"
+            color="bg-emerald-500/10 text-emerald-400"
           />
           <StatCard
             label="Pending Approvals"
             value={stats.pendingMerchants}
             icon={Clock}
-            color="bg-amber-50 text-amber-600"
+            color="bg-amber-500/10 text-amber-400"
           />
           <StatCard
             label="Total Vaults"
@@ -102,7 +102,7 @@ export default function AdminOverviewPage(): ReactNode {
             label="Active Vaults"
             value={stats.activeVaults}
             icon={TrendingUp}
-            color="bg-indigo-50 text-indigo-600"
+            color="bg-indigo-500/10 text-indigo-400"
           />
         </div>
       ) : null}

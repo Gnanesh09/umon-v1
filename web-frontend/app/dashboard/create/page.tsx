@@ -64,10 +64,17 @@ export default function CreatePage(): ReactNode {
   };
 
   return (
-    <div className="min-h-full">
-      <Header title="Create Payment" />
-      <div className="p-6">
-        <CreateVaultWizard onSubmit={handleSubmit} />
+    <div className="relative min-h-full" style={{ background: "radial-gradient(ellipse at 0% 0%, rgba(124,92,252,0.06), transparent 50%), var(--bg)" }}>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-40 top-20 h-[500px] w-[500px] rounded-full bg-[var(--primary)]/[0.04] blur-[120px]" />
+        <div className="absolute -right-32 bottom-0 h-[400px] w-[400px] rounded-full bg-emerald-500/[0.03] blur-[100px]" />
+        <div className="absolute left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-indigo-500/[0.03] blur-[100px]" />
+      </div>
+      <div className="relative">
+        <Header title="Create Payment" />
+        <div className="p-4 md:p-6 lg:p-8">
+          <CreateVaultWizard onSubmit={handleSubmit} />
+        </div>
       </div>
     </div>
   );

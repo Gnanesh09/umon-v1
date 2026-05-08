@@ -89,55 +89,55 @@ export default function CreateInvoicePage(): ReactNode {
       <div className="mb-6">
         <Link
           href="/merchant/invoices"
-          className="mb-3 inline-flex items-center gap-1 text-sm text-gray-400 transition hover:text-gray-600"
+          className="mb-3 inline-flex items-center gap-1 text-sm text-[var(--text-faint)] transition hover:text-[var(--text-muted)]"
         >
           <ArrowLeft size={14} /> Back to Invoices
         </Link>
-        <h1 className="font-cabinet text-2xl font-bold text-gray-900">Create Invoice</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Create Invoice</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Create an invoice for your customer. A payment link is auto-generated.
         </p>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
         {/* Customer Info */}
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Customer Name</label>
+            <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Customer Name</label>
             <input
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               placeholder="John Doe"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Customer Email</label>
+            <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Customer Email</label>
             <input
               type="email"
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               placeholder="john@example.com"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-600">Due Date</label>
+            <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Due Date</label>
             <input
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
         </div>
 
         {/* Line Items */}
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-900">Line Items</h3>
+          <h3 className="text-sm font-semibold text-[var(--text)]">Line Items</h3>
           <button
             onClick={addItem}
-            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 transition hover:text-emerald-700"
+            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400 transition hover:text-emerald-400"
           >
             <Plus size={14} /> Add Item
           </button>
@@ -150,7 +150,7 @@ export default function CreateInvoicePage(): ReactNode {
                 <input
                   value={item.description}
                   onChange={(e) => updateItem(idx, "description", e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Description"
                 />
               </div>
@@ -160,7 +160,7 @@ export default function CreateInvoicePage(): ReactNode {
                   min={1}
                   value={item.quantity}
                   onChange={(e) => updateItem(idx, "quantity", Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Qty"
                 />
               </div>
@@ -170,17 +170,17 @@ export default function CreateInvoicePage(): ReactNode {
                   step="0.01"
                   value={item.unitPrice || ""}
                   onChange={(e) => updateItem(idx, "unitPrice", Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="Price (USDC)"
                 />
               </div>
-              <div className="flex w-24 items-center justify-end pt-2 text-sm font-medium text-gray-700">
+              <div className="flex w-24 items-center justify-end pt-2 text-sm font-medium text-[var(--text)]">
                 ${(item.quantity * item.unitPrice).toFixed(2)}
               </div>
               {items.length > 1 && (
                 <button
                   onClick={() => removeItem(idx)}
-                  className="mt-2 text-gray-400 transition hover:text-red-500"
+                  className="mt-2 text-[var(--text-faint)] transition hover:text-red-400"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -191,21 +191,21 @@ export default function CreateInvoicePage(): ReactNode {
 
         {/* Notes */}
         <div className="mb-6">
-          <label className="mb-1 block text-xs font-medium text-gray-600">Notes</label>
+          <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={2}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+            className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
             placeholder="Payment terms, additional notes..."
           />
         </div>
 
         {/* Subtotal + Submit */}
-        <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+        <div className="flex items-center justify-between border-t border-[var(--border)] pt-4">
           <div>
-            <p className="text-sm text-gray-500">
-              Total: <span className="text-lg font-bold text-gray-900">${subtotal.toFixed(2)} USDC</span>
+            <p className="text-sm text-[var(--text-muted)]">
+              Total: <span className="text-lg font-bold text-[var(--text)]">${subtotal.toFixed(2)} USDC</span>
             </p>
           </div>
           <button

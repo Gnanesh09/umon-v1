@@ -167,8 +167,8 @@ export default function DeveloperPage(): ReactNode {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-cabinet text-2xl font-bold text-gray-900">Developer Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Developer Settings</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Manage API keys and webhooks for programmatic access to the payment gateway.
         </p>
       </div>
@@ -177,8 +177,8 @@ export default function DeveloperPage(): ReactNode {
       <div className="mb-8">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Key size={18} className="text-amber-600" />
-            <h2 className="text-sm font-semibold text-gray-900">API Keys</h2>
+            <Key size={18} className="text-amber-400" />
+            <h2 className="text-sm font-semibold text-[var(--text)]">API Keys</h2>
           </div>
           <button
             onClick={() => setShowKeyModal(true)}
@@ -191,30 +191,30 @@ export default function DeveloperPage(): ReactNode {
 
         {keysQuery.isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="animate-spin text-gray-400" size={20} />
+            <Loader2 className="animate-spin text-[var(--text-faint)]" size={20} />
           </div>
         ) : keys.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 py-8 text-center">
-            <Shield size={28} className="mx-auto mb-2 text-gray-300" />
-            <p className="text-sm text-gray-500">No API keys</p>
+          <div className="rounded-xl border border-dashed border-[var(--border-strong)] py-8 text-center">
+            <Shield size={28} className="mx-auto mb-2 text-[var(--text-faint)]" />
+            <p className="text-sm text-[var(--text-muted)]">No API keys</p>
           </div>
         ) : (
           <div className="space-y-2">
             {keys.map((k) => (
               <div
                 key={k.id}
-                className={`rounded-xl border bg-white p-4 ${k.is_active ? "border-gray-200" : "border-gray-100 opacity-60"}`}
+                className={`rounded-xl border bg-[var(--surface)] p-4 ${k.is_active ? "border-[var(--border)]" : "border-[var(--border)] opacity-60"}`}
               >
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-900">{k.label}</span>
+                      <span className="text-sm font-medium text-[var(--text)]">{k.label}</span>
                       {!k.is_active && (
-                        <span className="rounded bg-red-50 px-1.5 py-0.5 text-xs text-red-500">Revoked</span>
+                        <span className="rounded bg-red-500/10 px-1.5 py-0.5 text-xs text-red-400">Revoked</span>
                       )}
                     </div>
-                    <p className="mt-0.5 font-mono text-xs text-gray-400">{k.key_prefix}••••••••</p>
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-0.5 font-mono text-xs text-[var(--text-faint)]">{k.key_prefix}••••••••</p>
+                    <p className="mt-1 text-xs text-[var(--text-faint)]">
                       Created {new Date(k.created_at).toLocaleDateString()}
                       {k.last_used_at && ` · Last used ${new Date(k.last_used_at).toLocaleDateString()}`}
                     </p>
@@ -223,7 +223,7 @@ export default function DeveloperPage(): ReactNode {
                     <button
                       onClick={() => revokeKeyMut.mutate(k.id)}
                       disabled={revokeKeyMut.isPending}
-                      className="rounded-lg p-2 text-red-400 transition hover:bg-red-50"
+                      className="rounded-lg p-2 text-red-400 transition hover:bg-red-500/100/10"
                       title="Revoke key"
                     >
                       <Trash2 size={16} />
@@ -240,8 +240,8 @@ export default function DeveloperPage(): ReactNode {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Webhook size={18} className="text-indigo-600" />
-            <h2 className="text-sm font-semibold text-gray-900">Webhooks</h2>
+            <Webhook size={18} className="text-indigo-400" />
+            <h2 className="text-sm font-semibold text-[var(--text)]">Webhooks</h2>
           </div>
           <button
             onClick={() => setShowWebhookModal(true)}
@@ -254,28 +254,28 @@ export default function DeveloperPage(): ReactNode {
 
         {webhooksQuery.isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="animate-spin text-gray-400" size={20} />
+            <Loader2 className="animate-spin text-[var(--text-faint)]" size={20} />
           </div>
         ) : webhooks.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 py-8 text-center">
-            <Webhook size={28} className="mx-auto mb-2 text-gray-300" />
-            <p className="text-sm text-gray-500">No webhooks configured</p>
+          <div className="rounded-xl border border-dashed border-[var(--border-strong)] py-8 text-center">
+            <Webhook size={28} className="mx-auto mb-2 text-[var(--text-faint)]" />
+            <p className="text-sm text-[var(--text-muted)]">No webhooks configured</p>
           </div>
         ) : (
           <div className="space-y-2">
             {webhooks.map((wh) => (
-              <div key={wh.id} className="rounded-xl border border-gray-200 bg-white p-4">
+              <div key={wh.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 overflow-hidden">
-                    <p className="truncate font-mono text-sm text-gray-900">{wh.url}</p>
+                    <p className="truncate font-mono text-sm text-[var(--text)]">{wh.url}</p>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {wh.events.map((ev) => (
-                        <span key={ev} className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs text-indigo-600">
+                        <span key={ev} className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-xs text-indigo-400">
                           {ev}
                         </span>
                       ))}
                     </div>
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-[var(--text-faint)]">
                       {wh.failure_count > 0 && (
                         <span className="mr-2 text-amber-500">{wh.failure_count} failures</span>
                       )}
@@ -285,7 +285,7 @@ export default function DeveloperPage(): ReactNode {
                   <button
                     onClick={() => deleteWebhookMut.mutate(wh.id)}
                     disabled={deleteWebhookMut.isPending}
-                    className="ml-3 rounded-lg p-2 text-red-400 transition hover:bg-red-50"
+                    className="ml-3 rounded-lg p-2 text-red-400 transition hover:bg-red-500/100/10"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -299,9 +299,9 @@ export default function DeveloperPage(): ReactNode {
       {/* Create Key Modal */}
       {showKeyModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl bg-[var(--surface)] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2 className="text-lg font-bold text-[var(--text)]">
                 {newKey ? "API Key Created" : "New API Key"}
               </h2>
               <button
@@ -309,7 +309,7 @@ export default function DeveloperPage(): ReactNode {
                   setShowKeyModal(false);
                   setNewKey(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[var(--text-faint)] hover:text-[var(--text-muted)]"
               >
                 <X size={20} />
               </button>
@@ -317,17 +317,17 @@ export default function DeveloperPage(): ReactNode {
 
             {newKey ? (
               <div>
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
                   <p className="mb-2 text-xs font-medium text-amber-700">
                     Copy this key now. It won&apos;t be shown again.
                   </p>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 break-all rounded bg-white px-3 py-2 font-mono text-xs text-gray-900">
+                    <code className="flex-1 break-all rounded bg-[var(--surface)] px-3 py-2 font-mono text-xs text-[var(--text)]">
                       {newKey.key}
                     </code>
                     <button
                       onClick={() => copyText(newKey.key!, "newkey")}
-                      className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+                      className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--surface-3)]"
                     >
                       {copiedId === "newkey" ? (
                         <Check size={16} className="text-emerald-500" />
@@ -350,11 +350,11 @@ export default function DeveloperPage(): ReactNode {
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Label</label>
+                  <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Label</label>
                   <input
                     value={keyLabel}
                     onChange={(e) => setKeyLabel(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                    className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     placeholder="Production, Staging..."
                   />
                 </div>
@@ -374,28 +374,28 @@ export default function DeveloperPage(): ReactNode {
       {/* Create Webhook Modal */}
       {showWebhookModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl bg-[var(--surface)] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">New Webhook</h2>
+              <h2 className="text-lg font-bold text-[var(--text)]">New Webhook</h2>
               <button
                 onClick={() => setShowWebhookModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[var(--text-faint)] hover:text-[var(--text-muted)]"
               >
                 <X size={20} />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Endpoint URL</label>
+                <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Endpoint URL</label>
                 <input
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   placeholder="https://your-server.com/webhooks"
                 />
               </div>
               <div>
-                <label className="mb-2 block text-xs font-medium text-gray-600">Events</label>
+                <label className="mb-2 block text-xs font-medium text-[var(--text-muted)]">Events</label>
                 <div className="space-y-2">
                   {WEBHOOK_EVENTS.map((event) => (
                     <label key={event} className="flex items-center gap-2">
@@ -403,9 +403,9 @@ export default function DeveloperPage(): ReactNode {
                         type="checkbox"
                         checked={webhookEvents.includes(event)}
                         onChange={() => toggleEvent(event)}
-                        className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                        className="rounded border-[var(--border-strong)] text-emerald-400 focus:ring-emerald-500"
                       />
-                      <span className="text-sm text-gray-700">{event}</span>
+                      <span className="text-sm text-[var(--text)]">{event}</span>
                     </label>
                   ))}
                 </div>

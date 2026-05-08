@@ -18,8 +18,8 @@ type AdminNotification = {
 };
 
 const TYPE_STYLES: Record<string, string> = {
-  category_vault_created: "border-l-blue-500 bg-blue-50",
-  category_claim: "border-l-emerald-500 bg-emerald-50",
+  category_vault_created: "border-l-blue-500 bg-blue-500/10",
+  category_claim: "border-l-emerald-500 bg-emerald-500/10",
 };
 
 const TYPE_ICON: Record<string, ReactNode> = {
@@ -55,24 +55,24 @@ export default function AdminNotificationsPage(): ReactNode {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Notifications</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-[var(--text)]">Notifications</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             {unread > 0 ? `${unread} unread notification${unread !== 1 ? "s" : ""}` : "All caught up"}
           </p>
         </div>
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
-          <Bell size={20} className="text-indigo-600" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10">
+          <Bell size={20} className="text-indigo-400" />
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)]">
         {notifQuery.isLoading ? (
-          <div className="p-8 text-center text-sm text-gray-400">Loading notifications...</div>
+          <div className="p-8 text-center text-sm text-[var(--text-faint)]">Loading notifications...</div>
         ) : notifications.length === 0 ? (
           <div className="p-12 text-center">
-            <Bell size={40} className="mx-auto mb-3 text-gray-300" />
-            <p className="text-gray-500">No notifications yet</p>
-            <p className="mt-1 text-xs text-gray-400">
+            <Bell size={40} className="mx-auto mb-3 text-[var(--text-faint)]" />
+            <p className="text-[var(--text-muted)]">No notifications yet</p>
+            <p className="mt-1 text-xs text-[var(--text-faint)]">
               Notifications will appear when category-restricted vaults are created or claimed.
             </p>
           </div>
@@ -83,8 +83,8 @@ export default function AdminNotificationsPage(): ReactNode {
                 key={notif.id}
                 className={`flex items-start gap-3 border-l-4 px-5 py-4 transition ${
                   notif.read
-                    ? "border-l-gray-200 bg-white"
-                    : TYPE_STYLES[notif.type] ?? "border-l-indigo-500 bg-indigo-50"
+                    ? "border-l-gray-200 bg-[var(--surface)]"
+                    : TYPE_STYLES[notif.type] ?? "border-l-indigo-500 bg-indigo-500/10"
                 }`}
               >
                 <div className="mt-0.5">
@@ -92,17 +92,17 @@ export default function AdminNotificationsPage(): ReactNode {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className={`text-sm font-medium ${notif.read ? "text-gray-500" : "text-gray-900"}`}>
+                    <p className={`text-sm font-medium ${notif.read ? "text-[var(--text-muted)]" : "text-[var(--text)]"}`}>
                       {notif.title}
                     </p>
                     {!notif.read && (
-                      <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                      <span className="h-2 w-2 rounded-full bg-indigo-500/100" />
                     )}
                   </div>
-                  <p className={`mt-0.5 text-sm ${notif.read ? "text-gray-400" : "text-gray-600"}`}>
+                  <p className={`mt-0.5 text-sm ${notif.read ? "text-[var(--text-faint)]" : "text-[var(--text-muted)]"}`}>
                     {notif.message}
                   </p>
-                  <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
+                  <div className="mt-1 flex items-center gap-3 text-xs text-[var(--text-faint)]">
                     <span>{new Date(notif.created_at).toLocaleString()}</span>
                     {notif.vault_id && (
                       <span className="font-mono">{notif.vault_id.slice(0, 8)}...</span>
@@ -112,7 +112,7 @@ export default function AdminNotificationsPage(): ReactNode {
                 {!notif.read && (
                   <button
                     onClick={() => markReadMut.mutate(notif.id)}
-                    className="rounded-lg p-1.5 text-gray-400 transition hover:bg-white hover:text-gray-600"
+                    className="rounded-lg p-1.5 text-[var(--text-faint)] transition hover:bg-[var(--surface)] hover:text-[var(--text-muted)]"
                     title="Mark as read"
                   >
                     <Eye size={14} />

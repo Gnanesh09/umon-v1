@@ -45,21 +45,21 @@ export default function AdminLayout({ children }: { children: ReactNode }): Reac
 
   if (!mounted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-500 border-t-transparent" />
       </div>
     );
   }
 
   if (!authed) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="w-full max-w-xs rounded-2xl bg-white p-8 shadow-lg text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50">
-            <Lock className="h-7 w-7 text-indigo-600" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg)]">
+        <div className="w-full max-w-xs rounded-2xl bg-[var(--surface)] border border-[var(--border)] p-8 shadow-lg text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500/10">
+            <Lock className="h-7 w-7 text-indigo-400" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900">Umon Admin</h1>
-          <p className="mt-2 text-sm text-gray-500">Enter access code to continue</p>
+          <h1 className="text-xl font-bold text-[var(--text)]">Umon Admin</h1>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">Enter access code to continue</p>
           <form
             onSubmit={(e) => { e.preventDefault(); handleLogin(); }}
             className="mt-6"
@@ -70,11 +70,11 @@ export default function AdminLayout({ children }: { children: ReactNode }): Reac
               onChange={(e) => { setCode(e.target.value); setError(false); }}
               placeholder="Access code"
               autoFocus
-              className={`w-full rounded-lg border px-4 py-2.5 text-center text-lg tracking-widest text-gray-900 outline-none transition ${
-                error ? "border-red-400 bg-red-50" : "border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+              className={`w-full rounded-lg border px-4 py-2.5 text-center text-lg tracking-widest bg-[var(--surface-2)] text-[var(--text)] outline-none transition ${
+                error ? "border-red-500 bg-red-500/5" : "border-[var(--border)] focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               }`}
             />
-            {error ? <p className="mt-2 text-xs text-red-500">Incorrect code</p> : null}
+            {error ? <p className="mt-2 text-xs text-red-400">Incorrect code</p> : null}
             <button
               type="submit"
               className="mt-4 w-full rounded-lg bg-indigo-600 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
@@ -88,11 +88,11 @@ export default function AdminLayout({ children }: { children: ReactNode }): Reac
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-900">
-      <aside className="fixed left-0 top-0 z-30 flex h-screen w-56 flex-col border-r border-gray-200 bg-white">
-        <div className="flex h-14 items-center gap-2 border-b border-gray-200 px-4">
-          <Shield className="h-6 w-6 text-indigo-600" />
-          <span className="text-sm font-bold text-gray-900">Umon Admin</span>
+    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <aside className="fixed left-0 top-0 z-30 flex h-screen w-56 flex-col border-r border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex h-14 items-center gap-2 border-b border-[var(--border)] px-4">
+          <Shield className="h-6 w-6 text-indigo-400" />
+          <span className="text-sm font-bold text-[var(--text)]">Umon Admin</span>
         </div>
         <nav className="flex-1 p-3 space-y-0.5">
           {NAV_ITEMS.map((item) => {
@@ -103,8 +103,8 @@ export default function AdminLayout({ children }: { children: ReactNode }): Reac
                 href={item.href}
                 className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-indigo-500/10 text-indigo-400"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
                 }`}
               >
                 <item.icon className="h-4 w-4" />
@@ -113,10 +113,10 @@ export default function AdminLayout({ children }: { children: ReactNode }): Reac
             );
           })}
         </nav>
-        <div className="border-t border-gray-200 p-3">
+        <div className="border-t border-[var(--border)] p-3">
           <button
             onClick={() => { sessionStorage.removeItem(STORAGE_KEY); setAuthed(false); setCode(""); }}
-            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition"
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)] transition"
           >
             <LogOut className="h-4 w-4" />
             Logout

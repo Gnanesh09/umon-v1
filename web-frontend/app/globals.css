@@ -1,18 +1,18 @@
-@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@500,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #ffffff;
-  --surface: #f9fafb;
-  --surface-2: #f3f4f6;
-  --surface-3: #e5e7eb;
-  --border: #e5e7eb;
-  --border-strong: #d1d5db;
-  --text: #111827;
-  --text-muted: #6b7280;
-  --text-faint: #9ca3af;
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface-2: #16161f;
+  --surface-3: #1c1c28;
+  --border: rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.10);
+  --text: #e8e8f0;
+  --text-muted: #8888a0;
+  --text-faint: #44445a;
   --primary: #7c5cfc;
   --primary-hover: #6b4df0;
   --primary-subtle: rgba(124,92,252,0.10);
@@ -36,30 +36,12 @@
 html, body { height: 100%; overflow: hidden; }
 body {
   margin: 0;
-  font-family: "Satoshi", sans-serif;
-  background: #ffffff;
+  font-family: "Open Sans", sans-serif;
+  background: var(--bg);
   color: var(--text);
 }
 
-/* Dark theme — applied to landing page and dashboard sidebar */
-.theme-dark {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface-2: #16161f;
-  --surface-3: #1c1c28;
-  --border: rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.10);
-  --text: #e8e8f0;
-  --text-muted: #8888a0;
-  --text-faint: #44445a;
-}
-
-.theme-dark {
-  background: radial-gradient(1300px circle at 0% 0%, #171726, #0a0a0f 45%);
-  color: var(--text);
-}
-
-.theme-dark * { border-color: var(--border); }
+* { border-color: var(--border); }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums lining-nums;
@@ -71,18 +53,29 @@ body {
 }
 
 .card {
-  background: #ffffff;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
 
-.theme-dark .card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--surface);
-}
-
 /* Light theme override for /pay checkout pages */
+.pay-light {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f3f4f6;
+  --surface-3: #e5e7eb;
+  --border: #e2e8f0;
+  --border-strong: #d1d5db;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+}
 .pay-light * { border-color: #e2e8f0; }
 .pay-light, .pay-light body {
   overflow: auto;
   color: #0f172a;
+}
+.pay-light .card {
+  background: #ffffff;
+  border-color: #e2e8f0;
 }

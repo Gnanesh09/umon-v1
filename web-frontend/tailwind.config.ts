@@ -4,8 +4,8 @@ const config = {
   theme: {
     extend: {
       fontFamily: {
-        satoshi: ["Satoshi", "sans-serif"],
-        cabinet: ["Cabinet Grotesk", "sans-serif"],
+        sans: ["Open Sans", "sans-serif"],
+        cabinet: ["Open Sans", "sans-serif"],
       },
       boxShadow: {
         card: "0 8px 28px rgba(0, 0, 0, 0.34)",

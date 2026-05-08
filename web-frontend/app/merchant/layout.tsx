@@ -40,10 +40,10 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen items-center justify-center bg-[var(--bg)]">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-emerald-600" />
-          <p className="mt-3 text-sm text-gray-500">Loading...</p>
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[var(--surface-3)] border-t-emerald-500" />
+          <p className="mt-3 text-sm text-[var(--text-muted)]">Loading...</p>
         </div>
       </div>
     );
@@ -51,20 +51,20 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
 
   if (!user) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-white px-6">
+      <div className="flex h-screen flex-col items-center justify-center bg-[var(--bg)] px-6">
         <div className="mx-auto max-w-sm text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50">
-            <Store size={32} className="text-emerald-600" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+            <Store size={32} className="text-emerald-400" />
           </div>
-          <h1 className="font-cabinet text-2xl font-bold text-gray-900">Merchant Portal</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Merchant Portal</h1>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
             Connect your Solana wallet to access the merchant dashboard.
             Register businesses, manage payments, and grow your presence on PowerMoney.
           </p>
           <div className="mt-6">
             <WalletMultiButton />
           </div>
-          <Link href="/" className="mt-6 inline-flex items-center gap-1 text-sm text-gray-400 transition hover:text-gray-600">
+          <Link href="/" className="mt-6 inline-flex items-center gap-1 text-sm text-[var(--text-faint)] transition hover:text-[var(--text-muted)]">
             <ArrowLeft size={14} /> Back to Home
           </Link>
         </div>
@@ -73,16 +73,16 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[var(--bg)]">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-col border-r border-gray-200 bg-white lg:flex">
-        <div className="flex h-16 items-center gap-2.5 border-b border-gray-100 px-5">
+      <aside className="hidden w-64 flex-col border-r border-[var(--border)] bg-[var(--surface)] lg:flex">
+        <div className="flex h-16 items-center gap-2.5 border-b border-[var(--border)] px-5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 text-sm font-bold text-white">
             M
           </div>
           <div>
-            <span className="font-cabinet text-sm font-bold text-gray-900">Merchant Portal</span>
-            <p className="text-[10px] text-gray-400">PowerMoney</p>
+            <span className="font-cabinet text-sm font-bold text-[var(--text)]">Merchant Portal</span>
+            <p className="text-[10px] text-[var(--text-faint)]">PowerMoney</p>
           </div>
         </div>
 
@@ -97,8 +97,8 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
                 className={clsx(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition",
                   active
-                    ? "bg-emerald-50 font-medium text-emerald-700"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
+                    ? "bg-emerald-500/10 font-medium text-emerald-400"
+                    : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]",
                 )}
               >
                 <Icon size={18} />
@@ -108,10 +108,10 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
           })}
         </nav>
 
-        <div className="border-t border-gray-100 p-4">
+        <div className="border-t border-[var(--border)] p-4">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xs text-gray-400 transition hover:text-gray-600"
+            className="flex items-center gap-2 text-xs text-[var(--text-faint)] transition hover:text-[var(--text-muted)]"
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
@@ -119,20 +119,20 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
       </aside>
 
       {/* Mobile Header + Sidebar */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-4 lg:hidden">
-        <button onClick={() => setMobileOpen(true)} className="text-gray-500">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]/95 px-4 backdrop-blur lg:hidden">
+        <button onClick={() => setMobileOpen(true)} className="text-[var(--text-muted)]">
           <Menu size={20} />
         </button>
-        <span className="font-cabinet text-sm font-bold text-gray-900">Merchant Portal</span>
+        <span className="font-cabinet text-sm font-bold text-[var(--text)]">Merchant Portal</span>
         <WalletMultiButton />
       </div>
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
-          <aside className="relative w-64 bg-white h-full shadow-xl">
-            <div className="flex h-14 items-center justify-between border-b border-gray-100 px-4">
-              <span className="font-cabinet text-sm font-bold text-gray-900">Menu</span>
-              <button onClick={() => setMobileOpen(false)} className="text-gray-400">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
+          <aside className="relative w-64 bg-[var(--surface)] h-full shadow-xl">
+            <div className="flex h-14 items-center justify-between border-b border-[var(--border)] px-4">
+              <span className="font-cabinet text-sm font-bold text-[var(--text)]">Menu</span>
+              <button onClick={() => setMobileOpen(false)} className="text-[var(--text-faint)]">
                 <X size={18} />
               </button>
             </div>
@@ -148,8 +148,8 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
                     className={clsx(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition",
                       active
-                        ? "bg-emerald-50 font-medium text-emerald-700"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",
+                        ? "bg-emerald-500/10 font-medium text-emerald-400"
+                        : "text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]",
                     )}
                   >
                     <Icon size={18} />
@@ -165,10 +165,10 @@ export default function MerchantLayout({ children }: { children: ReactNode }): R
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Desktop Top Bar */}
-        <header className="hidden h-16 items-center justify-between border-b border-gray-200 bg-white px-6 lg:flex">
+        <header className="hidden h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--surface)] px-6 lg:flex">
           <div />
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-[var(--text-faint)]">
               {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
             </span>
             <WalletMultiButton />

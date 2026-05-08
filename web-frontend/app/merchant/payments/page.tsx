@@ -115,23 +115,23 @@ export default function MerchantPaymentsPage(): ReactNode {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="font-cabinet text-2xl font-bold text-gray-900">Payments</h1>
-        <p className="mt-1 text-sm text-gray-500">Track incoming payments and claim category-restricted funds.</p>
+        <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Payments</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">Track incoming payments and claim category-restricted funds.</p>
       </div>
 
       {/* Summary */}
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Total Received</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{formatUsdc(totalReceived)}</p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm text-[var(--text-muted)]">Total Received</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--text)]">{formatUsdc(totalReceived)}</p>
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500">Transactions</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{transactions.length}</p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p className="text-sm text-[var(--text-muted)]">Transactions</p>
+          <p className="mt-1 text-2xl font-bold text-[var(--text)]">{transactions.length}</p>
         </div>
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-          <p className="text-sm text-emerald-600">Claimable Vaults</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-700">{claimable.length}</p>
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5">
+          <p className="text-sm text-emerald-400">Claimable Vaults</p>
+          <p className="mt-1 text-2xl font-bold text-emerald-400">{claimable.length}</p>
         </div>
       </div>
 
@@ -139,14 +139,14 @@ export default function MerchantPaymentsPage(): ReactNode {
       {(claimableQuery.isLoading || claimable.length > 0) && (
         <div className="mb-6">
           <div className="mb-3 flex items-center gap-2">
-            <Inbox size={18} className="text-emerald-600" />
-            <h2 className="text-sm font-semibold text-gray-900">Incoming Category Payments</h2>
+            <Inbox size={18} className="text-emerald-400" />
+            <h2 className="text-sm font-semibold text-[var(--text)]">Incoming Category Payments</h2>
           </div>
 
           {claimableQuery.isLoading ? (
             <div className="space-y-3">
               {[1, 2].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-xl border border-gray-200 bg-gray-100" />
+                <div key={i} className="h-28 animate-pulse rounded-xl border border-[var(--border)] bg-[var(--surface-3)]" />
               ))}
             </div>
           ) : (
@@ -159,53 +159,53 @@ export default function MerchantPaymentsPage(): ReactNode {
                 return (
                   <div
                     key={vault.id}
-                    className="rounded-xl border border-emerald-200 bg-white p-5 transition hover:shadow-sm"
+                    className="rounded-xl border border-emerald-500/20 bg-[var(--surface)] p-5 transition hover:shadow-sm"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50">
-                            <Wallet size={18} className="text-emerald-600" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
+                            <Wallet size={18} className="text-emerald-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-[var(--text)]">
                               {formatUsdc(claimAmount)} available to claim
                             </p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-[var(--text-faint)]">
                               From {truncateAddress(vault.creator_wallet)} &middot; {timeAgo(vault.created_at)}
                             </p>
                           </div>
                         </div>
 
                         {vault.description && (
-                          <p className="mt-2 text-sm text-gray-500">{vault.description}</p>
+                          <p className="mt-2 text-sm text-[var(--text-muted)]">{vault.description}</p>
                         )}
 
                         <div className="mt-3 flex flex-wrap items-center gap-2">
                           <div className="flex items-center gap-1">
-                            <Tag size={12} className="text-gray-400" />
-                            <span className="text-xs text-gray-500">Categories:</span>
+                            <Tag size={12} className="text-[var(--text-faint)]" />
+                            <span className="text-xs text-[var(--text-muted)]">Categories:</span>
                           </div>
                           {vault._allowedCategories.map((cat) => (
                             <span
                               key={cat}
                               className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                                 cat === vault._matchingBusiness?.category
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-gray-100 text-gray-600"
+                                  ? "bg-emerald-500/15 text-emerald-400"
+                                  : "bg-[var(--surface-3)] text-[var(--text-muted)]"
                               }`}
                             >
                               {cat}
                             </span>
                           ))}
                           {vault._matchingBusiness && (
-                            <span className="ml-1 text-xs text-gray-400">
-                              &middot; matched to <span className="font-medium text-gray-600">{vault._matchingBusiness.businessName}</span>
+                            <span className="ml-1 text-xs text-[var(--text-faint)]">
+                              &middot; matched to <span className="font-medium text-[var(--text-muted)]">{vault._matchingBusiness.businessName}</span>
                             </span>
                           )}
                         </div>
 
-                        <div className="mt-2 flex items-center gap-3 text-xs text-gray-400">
+                        <div className="mt-2 flex items-center gap-3 text-xs text-[var(--text-faint)]">
                           <span>Vault: {formatUsdc(vault.amount_usdc)} total</span>
                           <span>{percentage}% for category</span>
                           <span className="font-mono">{vault.id.slice(0, 8)}...</span>
@@ -234,34 +234,34 @@ export default function MerchantPaymentsPage(): ReactNode {
       )}
 
       {/* Transaction List */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-5 py-3">
-          <h2 className="text-sm font-semibold text-gray-900">Recent Transactions</h2>
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+        <div className="border-b border-[var(--border)] px-5 py-3">
+          <h2 className="text-sm font-semibold text-[var(--text)]">Recent Transactions</h2>
         </div>
 
         {txQuery.isLoading ? (
-          <div className="p-8 text-center text-sm text-gray-400">Loading transactions...</div>
+          <div className="p-8 text-center text-sm text-[var(--text-faint)]">Loading transactions...</div>
         ) : transactions.length === 0 ? (
           <div className="p-12 text-center">
-            <CreditCard size={40} className="mx-auto mb-3 text-gray-300" />
-            <p className="text-gray-500">No transactions yet</p>
-            <p className="mt-1 text-xs text-gray-400">Payments will appear here once you start receiving them.</p>
+            <CreditCard size={40} className="mx-auto mb-3 text-[var(--text-faint)]" />
+            <p className="text-[var(--text-muted)]">No transactions yet</p>
+            <p className="mt-1 text-xs text-[var(--text-faint)]">Payments will appear here once you start receiving them.</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
             {transactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between px-5 py-3 transition hover:bg-gray-50">
+              <div key={tx.id} className="flex items-center justify-between px-5 py-3 transition hover:bg-[var(--surface-2)]">
                 <div className="flex items-center gap-3">
                   <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${
-                    tx.tx_type === "category_claim" ? "bg-emerald-50" : "bg-emerald-50"
+                    tx.tx_type === "category_claim" ? "bg-emerald-500/10" : "bg-emerald-500/10"
                   }`}>
-                    <ArrowDownLeft size={16} className="text-emerald-600" />
+                    <ArrowDownLeft size={16} className="text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-[var(--text)]">
                       {TX_TYPE_LABEL[tx.tx_type] ?? tx.tx_type}
                     </p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-[var(--text-faint)]">
                       {tx.from_wallet ? truncateAddress(tx.from_wallet) : "—"} &rarr;{" "}
                       {tx.to_wallet ? truncateAddress(tx.to_wallet) : "—"}
                     </p>
@@ -269,12 +269,12 @@ export default function MerchantPaymentsPage(): ReactNode {
                 </div>
                 <div className="text-right">
                   {tx.amount_usdc ? (
-                    <p className="text-sm font-medium text-emerald-600">{formatUsdc(tx.amount_usdc)}</p>
+                    <p className="text-sm font-medium text-emerald-400">{formatUsdc(tx.amount_usdc)}</p>
                   ) : (
-                    <p className="text-sm text-gray-400">—</p>
+                    <p className="text-sm text-[var(--text-faint)]">—</p>
                   )}
                   <div className="flex items-center justify-end gap-2">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-[var(--text-faint)]">
                       {new Date(tx.created_at).toLocaleDateString()}
                     </span>
                     {tx.tx_signature && !tx.tx_signature.startsWith("claim-") && (
@@ -282,7 +282,7 @@ export default function MerchantPaymentsPage(): ReactNode {
                         href={explorerTxUrl(tx.tx_signature)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-400 transition hover:text-indigo-600"
+                        className="text-[var(--text-faint)] transition hover:text-indigo-400"
                       >
                         <ExternalLink size={12} />
                       </a>

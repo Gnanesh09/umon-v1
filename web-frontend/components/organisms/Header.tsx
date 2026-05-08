@@ -15,10 +15,17 @@ function useJwt(): string | null {
   return token;
 }
 
+function useMounted(): boolean {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
+}
+
 export function Header({ title }: { title: string }): ReactNode {
   const [notifOpen, setNotifOpen] = useState(false);
   const { setCommandOpen } = useUiStore();
   const token = useJwt();
+  const mounted = useMounted();
   const { notificationsQuery } = useNotifications(token);
   const unreadCount = ((notificationsQuery.data?.data ?? []) as Array<{ read: boolean }>).filter((n) => !n.read).length;
 
@@ -44,7 +51,7 @@ export function Header({ title }: { title: string }): ReactNode {
               </span>
             ) : null}
           </button>
-          <WalletMultiButton />
+          {mounted ? <WalletMultiButton /> : <div className="h-10 w-40 animate-pulse rounded-md bg-[var(--surface-2)]" />}
         </div>
       </header>
       <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} token={token} />

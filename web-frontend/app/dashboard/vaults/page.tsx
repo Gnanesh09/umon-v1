@@ -111,7 +111,7 @@ export default function VaultListPage(): ReactNode {
 
         {/* Grid */}
         {vaultsQuery.isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" style={{ contentVisibility: "auto" }}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ contentVisibility: "auto" }}>
             {Array.from({ length: 6 }).map((_, i) => (
               <VaultCardSkeleton key={i} />
             ))}
@@ -139,7 +139,7 @@ export default function VaultListPage(): ReactNode {
           </motion.div>
         ) : (
           <>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" style={{ contentVisibility: "auto" }}>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ contentVisibility: "auto" }}>
               {vaults.map((vault, i) => (
                 <motion.div key={vault.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                   <Link href={`/dashboard/vaults/${vault.id}`}>

@@ -100,22 +100,22 @@ export default function ReceivePage(): ReactNode {
   return (
     <div className="mx-auto max-w-3xl p-6">
       <div className="mb-8">
-        <h1 className="font-cabinet text-2xl font-bold text-gray-900">Receive Payments</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="font-cabinet text-2xl font-bold text-[var(--text)]">Receive Payments</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Share your payment link or QR code to receive USDC from anyone.
         </p>
       </div>
 
       {/* Wallet Address */}
       {user && (
-        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
-              <Wallet size={18} className="text-indigo-600" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10">
+              <Wallet size={18} className="text-indigo-400" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-gray-400">Your Wallet</p>
-              <p className="font-mono text-sm text-gray-700">{user.walletAddress}</p>
+              <p className="text-xs text-[var(--text-faint)]">Your Wallet</p>
+              <p className="font-mono text-sm text-[var(--text-muted)]">{user.walletAddress}</p>
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function ReceivePage(): ReactNode {
 
       {/* Quick QR for wallet */}
       {user && (
-        <div className="mb-6 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-6">
+        <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-6">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
             <QRCodeDisplay
               url={`solana:${user.walletAddress}`}
@@ -131,8 +131,8 @@ export default function ReceivePage(): ReactNode {
               size={160}
             />
             <div className="flex-1 text-center sm:text-left">
-              <h3 className="text-sm font-semibold text-gray-900">Direct Wallet QR</h3>
-              <p className="mt-1 text-xs text-gray-500">
+              <h3 className="text-sm font-semibold text-[var(--text)]">Direct Wallet QR</h3>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
                 Anyone can scan this to see your wallet address. For tracked payments with automatic confirmation, create a payment link below.
               </p>
               <button
@@ -149,26 +149,26 @@ export default function ReceivePage(): ReactNode {
 
       {/* Create Modal */}
       {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">New Payment Link</h2>
-              <button onClick={() => setShowCreate(false)} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-lg font-bold text-[var(--text)]">New Payment Link</h2>
+              <button onClick={() => setShowCreate(false)} className="text-[var(--text-faint)] hover:text-[var(--text-muted)]">
                 <X size={20} />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">Title</label>
+                <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Title</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30"
                   placeholder="Coffee fund, Freelance work..."
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-gray-600">
+                <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
                   Amount (USDC) — leave blank for any amount
                 </label>
                 <input
@@ -176,7 +176,7 @@ export default function ReceivePage(): ReactNode {
                   step="0.01"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
+                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30"
                   placeholder="10.00"
                 />
               </div>
@@ -194,11 +194,11 @@ export default function ReceivePage(): ReactNode {
 
       {/* QR Modal */}
       {selectedQr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Payment QR</h2>
-              <button onClick={() => setSelectedQr(null)} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-lg font-bold text-[var(--text)]">Payment QR</h2>
+              <button onClick={() => setSelectedQr(null)} className="text-[var(--text-faint)] hover:text-[var(--text-muted)]">
                 <X size={20} />
               </button>
             </div>
@@ -213,28 +213,28 @@ export default function ReceivePage(): ReactNode {
 
       {/* Links List */}
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-900">Your Payment Links</h2>
+        <h2 className="text-sm font-semibold text-[var(--text)]">Your Payment Links</h2>
       </div>
 
       {linksQuery.isLoading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="animate-spin text-gray-400" size={24} />
+          <Loader2 className="animate-spin text-[var(--text-faint)]" size={24} />
         </div>
       ) : links.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-          <Link2 size={32} className="mx-auto mb-2 text-gray-300" />
-          <p className="text-sm text-gray-500">No payment links yet</p>
+        <div className="rounded-xl border border-dashed border-[var(--border-strong)] py-12 text-center">
+          <Link2 size={32} className="mx-auto mb-2 text-[var(--text-faint)]" />
+          <p className="text-sm text-[var(--text-muted)]">No payment links yet</p>
         </div>
       ) : (
         <div className="space-y-3">
           {links.map((link) => {
             const url = `${FRONTEND_URL}/pay/${link.short_code}`;
             return (
-              <div key={link.id} className="rounded-xl border border-gray-200 bg-white p-4 transition hover:shadow-sm">
+              <div key={link.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-[var(--border-strong)]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{link.title}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm font-medium text-[var(--text)]">{link.title}</p>
+                    <p className="text-xs text-[var(--text-faint)]">
                       {link.amount_usdc ? `$${(link.amount_usdc / 1_000_000).toFixed(2)} USDC` : "Flexible amount"}{" "}
                       &middot; {link.use_count} uses
                     </p>
@@ -242,13 +242,13 @@ export default function ReceivePage(): ReactNode {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => copyUrl(link)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                      className="rounded-lg p-2 text-[var(--text-faint)] hover:bg-[var(--surface-2)] hover:text-[var(--text-muted)]"
                     >
-                      {copied === link.id ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      {copied === link.id ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                     </button>
                     <button
                       onClick={() => setSelectedQr(link)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                      className="rounded-lg p-2 text-[var(--text-faint)] hover:bg-[var(--surface-2)] hover:text-[var(--text-muted)]"
                     >
                       <QrCode size={14} />
                     </button>
@@ -256,13 +256,13 @@ export default function ReceivePage(): ReactNode {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600"
+                      className="rounded-lg p-2 text-[var(--text-faint)] hover:bg-[var(--surface-2)] hover:text-[var(--text-muted)]"
                     >
                       <ExternalLink size={14} />
                     </a>
                     <button
                       onClick={() => deleteMut.mutate(link.id)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                      className="rounded-lg p-2 text-[var(--text-faint)] hover:bg-red-500/10 hover:text-red-400"
                     >
                       <Trash2 size={14} />
                     </button>
