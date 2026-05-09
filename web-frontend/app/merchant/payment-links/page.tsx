@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type ApiResult } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import { QRCodeDisplay } from "@/components/molecules/QRCodeDisplay";
+import { truncateAddress, truncateTxSignature, timeAgo } from "@/lib/format";
+import { explorerTxUrl } from "@/lib/constants";
 import { toast } from "sonner";
 import {
   Link2,
@@ -26,7 +28,11 @@ import {
   Wallet,
   MoreHorizontal,
   Save,
-  ArrowLeft,
+  TrendingUp,
+  ArrowDownLeft,
+  Receipt,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 type PaymentLink = {
@@ -44,6 +50,32 @@ type PaymentLink = {
   created_at: string;
   updated_at: string;
   paymentUrl?: string;
+  _collected?: number;
+  _sessionCount?: number;
+  _completedCount?: number;
+};
+
+type PaymentSession = {
+  id: string;
+  payment_link_id: string;
+  payer_wallet: string | null;
+  recipient_wallet: string;
+  amount_usdc: number;
+  status: string;
+  tx_signature: string | null;
+  paid_at: string | null;
+  confirmed_at: string | null;
+  created_at: string;
+};
+
+type CollectionsResponse = {
+  links: PaymentLink[];
+  sessions: PaymentSession[];
+  totals: {
+    totalCollected: number;
+    totalSessions: number;
+    completedSessions: number;
+  };
 };
 
 type ModalMode = "create" | "edit" | "qr" | null;
@@ -58,6 +90,20 @@ const emptyForm = {
   maxUses: "",
 };
 
+function formatUsdc(lamports: number): string {
+  return `$${(lamports / 1_000_000).toFixed(2)}`;
+}
+
+const SESSION_STATUS_STYLE: Record<string, string> = {
+  completed: "bg-emerald-500/15 text-emerald-400",
+  confirming: "bg-amber-500/15 text-amber-400",
+  paying: "bg-blue-500/15 text-blue-400",
+  created: "bg-[var(--surface-3)] text-[var(--text-muted)]",
+  expired: "bg-red-500/10 text-red-400",
+  failed: "bg-red-500/10 text-red-400",
+  refunded: "bg-purple-500/15 text-purple-400",
+};
+
 export default function PaymentLinksPage(): ReactNode {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
@@ -67,11 +113,12 @@ export default function PaymentLinksPage(): ReactNode {
   const [copied, setCopied] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [expandedLink, setExpandedLink] = useState<string | null>(null);
 
-  const linksQuery = useQuery({
-    queryKey: ["payment-links"],
+  const collectionsQuery = useQuery({
+    queryKey: ["payment-link-collections"],
     queryFn: async () => {
-      const res = await api.get<ApiResult<PaymentLink[]>>("/payment-links");
+      const res = await api.get<ApiResult<CollectionsResponse>>("/payment-links/collections");
       return res.data.data;
     },
     enabled: !!user,
@@ -84,7 +131,7 @@ export default function PaymentLinksPage(): ReactNode {
     },
     onSuccess: () => {
       toast.success("Payment link created!");
-      queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+      queryClient.invalidateQueries({ queryKey: ["payment-link-collections"] });
       closeModal();
     },
     onError: () => toast.error("Failed to create payment link"),
@@ -97,7 +144,7 @@ export default function PaymentLinksPage(): ReactNode {
     },
     onSuccess: () => {
       toast.success("Payment link updated!");
-      queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+      queryClient.invalidateQueries({ queryKey: ["payment-link-collections"] });
       closeModal();
     },
     onError: () => toast.error("Failed to update payment link"),
@@ -110,7 +157,7 @@ export default function PaymentLinksPage(): ReactNode {
     },
     onSuccess: (_, vars) => {
       toast.success(vars.isActive ? "Link activated" : "Link deactivated");
-      queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+      queryClient.invalidateQueries({ queryKey: ["payment-link-collections"] });
     },
     onError: () => toast.error("Failed to toggle link"),
   });
@@ -172,7 +219,6 @@ export default function PaymentLinksPage(): ReactNode {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  // Close context menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
     const handler = () => setMenuOpen(null);
@@ -180,10 +226,16 @@ export default function PaymentLinksPage(): ReactNode {
     return () => document.removeEventListener("click", handler);
   }, [menuOpen]);
 
-  const links = linksQuery.data ?? [];
+  const data = collectionsQuery.data;
+  const links = data?.links ?? [];
+  const sessions = data?.sessions ?? [];
+  const totals = data?.totals ?? { totalCollected: 0, totalSessions: 0, completedSessions: 0 };
   const activeLinks = links.filter((l) => l.is_active);
   const inactiveLinks = links.filter((l) => !l.is_active);
   const isBusy = createMut.isPending || updateMut.isPending;
+
+  const sessionsForLink = (linkId: string) =>
+    sessions.filter((s) => s.payment_link_id === linkId);
 
   return (
     <div>
@@ -208,21 +260,39 @@ export default function PaymentLinksPage(): ReactNode {
       {links.length > 0 && (
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
           {[
-            { label: "Total Links", value: links.length, icon: Link2 },
-            { label: "Active", value: activeLinks.length, icon: ToggleRight },
-            { label: "Total Uses", value: links.reduce((s, l) => s + l.use_count, 0), icon: Users },
             {
-              label: "With Amount",
-              value: links.filter((l) => l.amount_usdc).length,
-              icon: DollarSign,
+              label: "Total Collected",
+              value: formatUsdc(totals.totalCollected),
+              icon: TrendingUp,
+              accent: true,
             },
-          ].map(({ label, value, icon: Icon }) => (
-            <div key={label} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-              <div className="flex items-center gap-2 text-xs text-[var(--text-faint)]">
+            { label: "Active Links", value: activeLinks.length.toString(), icon: Link2 },
+            {
+              label: "Completed Payments",
+              value: totals.completedSessions.toString(),
+              icon: Receipt,
+            },
+            {
+              label: "Total Sessions",
+              value: totals.totalSessions.toString(),
+              icon: Users,
+            },
+          ].map(({ label, value, icon: Icon, accent }) => (
+            <div
+              key={label}
+              className={`rounded-xl border p-4 ${
+                accent
+                  ? "border-emerald-500/20 bg-emerald-500/[0.06]"
+                  : "border-[var(--border)] bg-[var(--surface)]"
+              }`}
+            >
+              <div className={`flex items-center gap-2 text-xs ${accent ? "text-emerald-400" : "text-[var(--text-faint)]"}`}>
                 <Icon size={12} />
                 {label}
               </div>
-              <p className="mt-1 text-xl font-bold text-[var(--text)]">{value}</p>
+              <p className={`mt-1 text-xl font-bold ${accent ? "text-emerald-400" : "text-[var(--text)]"}`}>
+                {value}
+              </p>
             </div>
           ))}
         </div>
@@ -232,7 +302,6 @@ export default function PaymentLinksPage(): ReactNode {
       {(modal === "create" || modal === "edit") && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-2xl bg-[var(--surface)] p-0 shadow-2xl">
-            {/* Modal header */}
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
               <h2 className="text-lg font-bold text-[var(--text)]">
                 {modal === "edit" ? "Edit Payment Link" : "New Payment Link"}
@@ -245,7 +314,6 @@ export default function PaymentLinksPage(): ReactNode {
               </button>
             </div>
 
-            {/* Modal body */}
             <div className="space-y-4 px-6 py-5">
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-[var(--text-muted)]">
@@ -323,7 +391,6 @@ export default function PaymentLinksPage(): ReactNode {
               </div>
             </div>
 
-            {/* Modal footer */}
             <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-6 py-4">
               <button
                 onClick={closeModal}
@@ -380,7 +447,7 @@ export default function PaymentLinksPage(): ReactNode {
       )}
 
       {/* Links List */}
-      {linksQuery.isLoading ? (
+      {collectionsQuery.isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-[var(--text-faint)]" size={24} />
         </div>
@@ -408,11 +475,14 @@ export default function PaymentLinksPage(): ReactNode {
                   link={link}
                   copied={copied}
                   menuOpen={menuOpen}
+                  expanded={expandedLink === link.id}
+                  sessions={sessionsForLink(link.id)}
                   onCopy={copyUrl}
                   onEdit={openEdit}
                   onQr={openQr}
                   onToggle={(id, active) => toggleMut.mutate({ id, isActive: active })}
                   onMenuToggle={(id) => setMenuOpen(menuOpen === id ? null : id)}
+                  onExpandToggle={(id) => setExpandedLink(expandedLink === id ? null : id)}
                 />
               ))}
             </div>
@@ -422,11 +492,11 @@ export default function PaymentLinksPage(): ReactNode {
           {inactiveLinks.length > 0 && (
             <>
               <div className="flex items-center gap-3 pt-4">
-                <div className="h-px flex-1 bg-gray-200" />
+                <div className="h-px flex-1 bg-[var(--border)]" />
                 <span className="text-xs font-medium text-[var(--text-faint)]">
                   Inactive ({inactiveLinks.length})
                 </span>
-                <div className="h-px flex-1 bg-gray-200" />
+                <div className="h-px flex-1 bg-[var(--border)]" />
               </div>
               <div className="space-y-3">
                 {inactiveLinks.map((link) => (
@@ -435,11 +505,14 @@ export default function PaymentLinksPage(): ReactNode {
                     link={link}
                     copied={copied}
                     menuOpen={menuOpen}
+                    expanded={expandedLink === link.id}
+                    sessions={sessionsForLink(link.id)}
                     onCopy={copyUrl}
                     onEdit={openEdit}
                     onQr={openQr}
                     onToggle={(id, active) => toggleMut.mutate({ id, isActive: active })}
                     onMenuToggle={(id) => setMenuOpen(menuOpen === id ? null : id)}
+                    onExpandToggle={(id) => setExpandedLink(expandedLink === id ? null : id)}
                   />
                 ))}
               </div>
@@ -458,22 +531,30 @@ function LinkCard({
   link,
   copied,
   menuOpen,
+  expanded,
+  sessions,
   onCopy,
   onEdit,
   onQr,
   onToggle,
   onMenuToggle,
+  onExpandToggle,
 }: {
   link: PaymentLink;
   copied: string | null;
   menuOpen: string | null;
+  expanded: boolean;
+  sessions: PaymentSession[];
   onCopy: (l: PaymentLink) => void;
   onEdit: (l: PaymentLink) => void;
   onQr: (l: PaymentLink) => void;
   onToggle: (id: string, active: boolean) => void;
   onMenuToggle: (id: string) => void;
+  onExpandToggle: (id: string) => void;
 }): ReactNode {
   const url = `${FRONTEND_URL}/pay/${link.short_code}`;
+  const collected = link._collected ?? 0;
+  const completedCount = link._completedCount ?? 0;
 
   return (
     <div
@@ -495,6 +576,9 @@ function LinkCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h3 className="truncate text-sm font-semibold text-[var(--text)]">{link.title}</h3>
+            <code className="shrink-0 rounded bg-[var(--surface-3)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--text-faint)]">
+              {link.short_code}
+            </code>
             <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
               link.is_active
                 ? "bg-emerald-500/10 text-emerald-400"
@@ -528,6 +612,32 @@ function LinkCard({
                 <Calendar size={11} />
                 Expires {new Date(link.expires_at).toLocaleDateString()}
               </span>
+            )}
+          </div>
+
+          {/* Collected funds badge */}
+          <div className="mt-2.5 flex items-center gap-3">
+            <div className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold ${
+              collected > 0
+                ? "bg-emerald-500/10 text-emerald-400"
+                : "bg-[var(--surface-2)] text-[var(--text-faint)]"
+            }`}>
+              <TrendingUp size={12} />
+              {collected > 0 ? formatUsdc(collected) : "$0.00"} collected
+            </div>
+            {completedCount > 0 && (
+              <span className="text-[11px] text-[var(--text-faint)]">
+                {completedCount} payment{completedCount !== 1 ? "s" : ""}
+              </span>
+            )}
+            {sessions.length > 0 && (
+              <button
+                onClick={() => onExpandToggle(link.id)}
+                className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] text-[var(--text-faint)] transition hover:bg-[var(--surface-2)] hover:text-[var(--text-muted)]"
+              >
+                {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                {expanded ? "Hide" : "View"} payments
+              </button>
             )}
           </div>
 
@@ -576,7 +686,6 @@ function LinkCard({
               <MoreHorizontal size={15} />
             </button>
 
-            {/* Dropdown */}
             {menuOpen === link.id && (
               <div className="absolute right-0 top-full z-30 mt-1 w-44 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] py-1 shadow-xl">
                 <a
@@ -617,6 +726,63 @@ function LinkCard({
           </div>
         </div>
       </div>
+
+      {/* Expanded payment sessions */}
+      {expanded && sessions.length > 0 && (
+        <div className="border-t border-[var(--border)]">
+          <div className="px-5 py-3">
+            <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">Payment Sessions</p>
+            <div className="space-y-2">
+              {sessions.map((s) => (
+                <div
+                  key={s.id}
+                  className="rounded-lg bg-[var(--surface-2)] px-3.5 py-2.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--surface-3)]">
+                        <ArrowDownLeft size={13} className="text-emerald-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-medium text-[var(--text)]">
+                            {formatUsdc(s.amount_usdc)}
+                          </p>
+                          <code className="rounded bg-[var(--surface-3)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--text-faint)]">
+                            {s.id.slice(0, 8)}
+                          </code>
+                        </div>
+                        <p className="text-[10px] text-[var(--text-faint)]">
+                          {s.payer_wallet ? truncateAddress(s.payer_wallet) : "Unknown payer"}
+                          {" · "}
+                          {timeAgo(s.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${SESSION_STATUS_STYLE[s.status] ?? "bg-[var(--surface-3)] text-[var(--text-muted)]"}`}>
+                      {s.status}
+                    </span>
+                  </div>
+                  {s.tx_signature && (
+                    <div className="mt-1.5 flex items-center gap-2 pl-10">
+                      <span className="text-[10px] text-[var(--text-faint)]">Tx:</span>
+                      <a
+                        href={explorerTxUrl(s.tx_signature)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-mono text-[10px] text-[var(--primary)] transition hover:underline"
+                      >
+                        {truncateTxSignature(s.tx_signature)}
+                        <ExternalLink size={9} />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

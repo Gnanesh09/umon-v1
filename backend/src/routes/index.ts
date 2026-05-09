@@ -13,6 +13,7 @@ import { invoiceRouter } from "./invoiceRoutes.js";
 import { refundRouter } from "./refundRoutes.js";
 import { qrRouter } from "./qrRoutes.js";
 import { developerRouter } from "./developerRoutes.js";
+import { agentWalletRouter } from "./agentWalletRoutes.js";
 
 export const apiRouter = Router();
 
@@ -30,3 +31,4 @@ apiRouter.use("/invoices", invoiceRouter);
 apiRouter.use("/refunds", refundRouter);
 apiRouter.use("/qr", qrRouter);
 apiRouter.use("/developer", developerRouter);
+apiRouter.use("/agent-wallets", agentWalletRouter);

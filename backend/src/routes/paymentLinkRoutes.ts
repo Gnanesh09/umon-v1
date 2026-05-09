@@ -6,6 +6,7 @@ import {
   resolveShortCode,
   updatePaymentLink,
   deactivatePaymentLink,
+  getPaymentLinkCollections,
 } from "../controllers/paymentLinkController.js";
 import { validate } from "../middleware/validate.js";
 import { authenticate } from "../middleware/authenticate.js";
@@ -23,6 +24,7 @@ export const paymentLinkRouter = Router();
 paymentLinkRouter.get("/code/:shortCode", validate(shortCodeSchema), resolveShortCode);
 
 // Authenticated routes
+paymentLinkRouter.get("/collections", authenticate, getPaymentLinkCollections);
 paymentLinkRouter.post("/", authenticate, validate(createPaymentLinkSchema), createPaymentLink);
 paymentLinkRouter.get("/", authenticate, validate(listPaymentLinksSchema), listMyPaymentLinks);
 paymentLinkRouter.get("/:id", authenticate, validate(paymentLinkIdSchema), getPaymentLinkDetail);

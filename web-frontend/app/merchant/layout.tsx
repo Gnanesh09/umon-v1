@@ -19,6 +19,7 @@ import {
   Link2,
   FileText,
   Code2,
+  Bot,
 } from "lucide-react";
 
 const navItems = [
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/merchant/payments", label: "Payments", icon: CreditCard, exact: false },
   { href: "/merchant/payment-links", label: "Payment Links", icon: Link2, exact: false },
   { href: "/merchant/invoices", label: "Invoices", icon: FileText, exact: false },
+  { href: "/merchant/agents", label: "AI Agents", icon: Bot, exact: false },
   { href: "/merchant/developer", label: "Developer", icon: Code2, exact: false },
   { href: "/merchant/settings", label: "Settings", icon: Settings, exact: false },
 ];

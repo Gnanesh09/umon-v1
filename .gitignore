@@ -7,4 +7,5 @@ build
 .next
 coverage
 .DS_Store
-*.log
+*.log.mcp.json
+.VSCodeCounter/

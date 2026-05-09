@@ -154,6 +154,27 @@ export class PaymentSessionService {
     return data;
   }
 
+  async listByPaymentLinkIds(linkIds: string[], statusFilter?: string[]) {
+    if (linkIds.length === 0) return [];
+
+    let query = supabase
+      .from("payment_sessions")
+      .select("*")
+      .in("payment_link_id", linkIds)
+      .order("created_at", { ascending: false });
+
+    if (statusFilter && statusFilter.length > 0) {
+      query = query.in("status", statusFilter);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      logger.error({ err: error }, "Failed to list sessions by payment link IDs");
+      return [];
+    }
+    return data ?? [];
+  }
+
   async markRefunded(sessionId: string, refundTxSignature: string) {
     const { data, error } = await supabase
       .from("payment_sessions")

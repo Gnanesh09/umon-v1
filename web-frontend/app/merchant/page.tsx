@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api, type ApiResult } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Store, PlusCircle, CreditCard, Clock, CheckCircle2, XCircle, Inbox } from "lucide-react";
+import { Store, PlusCircle, CreditCard, Clock, CheckCircle2, XCircle, Inbox, TrendingUp, Link2 } from "lucide-react";
 
 type MerchantBusiness = {
   id: string;
@@ -17,6 +17,12 @@ type MerchantBusiness = {
 };
 
 type ClaimableVault = { id: string; amount_usdc: number; conditions: Array<{ type: string; percentage?: number }> };
+
+type CollectionsTotals = {
+  totalCollected: number;
+  totalSessions: number;
+  completedSessions: number;
+};
 
 const STATUS_ICON: Record<string, ReactNode> = {
   approved: <CheckCircle2 size={16} className="text-emerald-500" />,
@@ -53,8 +59,18 @@ export default function MerchantOverview(): ReactNode {
     enabled: !!user,
   });
 
+  const collectionsQuery = useQuery({
+    queryKey: ["payment-link-collections"],
+    queryFn: async () => {
+      const res = await api.get<ApiResult<{ totals: CollectionsTotals }>>("/payment-links/collections");
+      return res.data.data.totals;
+    },
+    enabled: !!user,
+  });
+
   const businesses = businessesQuery.data ?? [];
   const claimable = claimableQuery.data ?? [];
+  const totals = collectionsQuery.data;
   const approved = businesses.filter((b) => b.status === "approved").length;
   const pending = businesses.filter((b) => b.status === "pending").length;
 
@@ -68,7 +84,19 @@ export default function MerchantOverview(): ReactNode {
       </div>
 
       {/* Quick Stats */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] p-5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-emerald-400">Funds Collected</p>
+            <TrendingUp size={18} className="text-emerald-400" />
+          </div>
+          <p className="mt-2 text-2xl font-bold text-emerald-400">
+            ${totals ? (totals.totalCollected / 1_000_000).toFixed(2) : "0.00"}
+          </p>
+          {totals && totals.completedSessions > 0 && (
+            <p className="mt-1 text-xs text-emerald-400/70">{totals.completedSessions} payments via links</p>
+          )}
+        </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
           <div className="flex items-center justify-between">
             <p className="text-sm text-[var(--text-muted)]">Total Businesses</p>
@@ -118,7 +146,7 @@ export default function MerchantOverview(): ReactNode {
       {/* Quick Actions */}
       <div className="mb-8">
         <h2 className="mb-3 text-sm font-semibold text-[var(--text)]">Quick Actions</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/merchant/register"
             className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-emerald-500/20 hover:shadow-sm"
@@ -133,7 +161,7 @@ export default function MerchantOverview(): ReactNode {
           </Link>
           <Link
             href="/merchant/payments"
-            className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-indigo-200 hover:shadow-sm"
+            className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-indigo-500/20 hover:shadow-sm"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10">
               <CreditCard size={20} className="text-indigo-400" />
@@ -141,6 +169,18 @@ export default function MerchantOverview(): ReactNode {
             <div>
               <p className="font-medium text-[var(--text)]">View Payments</p>
               <p className="text-xs text-[var(--text-muted)]">Track incoming payments across businesses</p>
+            </div>
+          </Link>
+          <Link
+            href="/merchant/payment-links"
+            className="flex items-center gap-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-emerald-500/20 hover:shadow-sm"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
+              <Link2 size={20} className="text-emerald-400" />
+            </div>
+            <div>
+              <p className="font-medium text-[var(--text)]">Payment Links & Collections</p>
+              <p className="text-xs text-[var(--text-muted)]">View funds collected from your payment links</p>
             </div>
           </Link>
         </div>
