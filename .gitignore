@@ -7,5 +7,9 @@ build
 .next
 coverage
 .DS_Store
-*.log.mcp.json
+*.log
+.mcp.json
 .VSCodeCounter/
+
+# Rust/Anchor build artifacts
+smart-contracts/target/

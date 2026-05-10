@@ -21,7 +21,10 @@
       "Bash(powershell.exe -Command \"Get-Process -Name node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
       "Bash(python3 -c ' *)",
       "WebSearch",
-      "Bash(mkdir -p \"D:/GNANESH_PROJECTS/POWERMONEY/web-frontend/app/pay/[code]\")"
+      "Bash(mkdir -p \"D:/GNANESH_PROJECTS/POWERMONEY/web-frontend/app/pay/[code]\")",
+      "mcp__powermoney-agent__check_balance",
+      "mcp__powermoney-agent__pay",
+      "Bash(git commit -m ' *)"
     ],
     "additionalDirectories": [
       "D:\\GNANESH_PROJECTS\\POWERMONEY\\web-frontend\\app\\pay"
