@@ -24,7 +24,12 @@
       "Bash(mkdir -p \"D:/GNANESH_PROJECTS/POWERMONEY/web-frontend/app/pay/[code]\")",
       "mcp__powermoney-agent__check_balance",
       "mcp__powermoney-agent__pay",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "mcp__powermoney-agent__wallet_info",
+      "mcp__powermoney-agent__spending_analytics",
+      "mcp__powermoney-agent__discover_merchants",
+      "mcp__powermoney-agent__list_vaults",
+      "mcp__powermoney-agent__list_transactions"
     ],
     "additionalDirectories": [
       "D:\\GNANESH_PROJECTS\\POWERMONEY\\web-frontend\\app\\pay"

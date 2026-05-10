@@ -1,52 +1,139 @@
 # PowerMoney Backend
 
-## Environment
+Backend API and policy engine for PowerMoney. This service is the control plane that coordinates authentication, merchant operations, vault/payment workflows, analytics, and agent-wallet operations.
 
-Copy `.env.example` to `.env` and provide values:
+## Scope
+
+`backend/` provides:
+- REST APIs under `/api/*`
+- Auth and authorization middleware
+- Business policy enforcement and validations
+- Supabase persistence and query layer
+- Queue/worker-oriented services (where configured)
+- Integrations with Solana, Helius, and notification providers
+
+## Tech Stack
+
+- Node.js + Express
+- TypeScript (ESM)
+- Supabase (`@supabase/supabase-js`)
+- Solana + Anchor client dependencies
+- BullMQ + Redis (feature-dependent)
+- JWT auth and zod validation
+
+## Project Layout
+
+- `src/app.ts` - Express app wiring, middleware, `/api` mount, `/health`
+- `src/index.ts` - bootstrap entrypoint
+- `src/routes/` - route modules
+- `src/controllers/` - HTTP controller layer
+- `src/services/` - business/integration services
+- `src/validators/` - zod input schemas
+- `src/middleware/` - auth, rate limiting, error handling
+- `src/lib/` - shared clients/utilities (Supabase/Solana/logger)
+- `db/migrations/` and `supabase/migrations/` - SQL migration history
+
+## Environment Configuration
+
+Create `backend/.env` with at least:
 
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SOLANA_RPC_URL`
-- `HELIUS_API_KEY`
 - `PROGRAM_ID`
-- `JWT_SECRET`
-- `REDIS_URL` (optional; required only for OracleWatcher BullMQ jobs)
-- `PORT`
+- `JWT_SECRET` (minimum 32 chars)
+
+Common optional keys:
+- `HELIUS_API_KEY`
+- `REDIS_URL`
 - `CHAINLINK_WEATHER_FEED`
 - `PYTH_PRICE_FEED`
-- `RESEND_API_KEY` (optional)
+- `RESEND_API_KEY`
+- `AUTHORITY_KEYPAIR`
+- `TREASURY_WALLET`
+- `FEE_PERCENTAGE`
+- `FEE_MIN_USDC`
+- `ADMIN_CODE`
+- `PORT` (default `3001`)
 
-## Scripts
+## Install and Run
 
-- `pnpm dev`: start dev server with watch
-- `pnpm build`: compile TypeScript
-- `pnpm start`: run compiled server
-- `pnpm lint`: strict type-check
+```bash
+pnpm install
+pnpm --filter @powermoney/backend dev
+```
 
-## Migrations
+Build + start:
 
-Run `backend/db/migrations/001_init.sql` in Supabase SQL editor.
+```bash
+pnpm --filter @powermoney/backend build
+pnpm --filter @powermoney/backend start
+```
 
-## Endpoints
+Type-check/lint:
 
-| Method | Route | Description |
-|---|---|---|
-| POST | `/api/auth/nonce` | Wallet login nonce |
-| POST | `/api/auth/verify` | Signature -> JWT |
-| GET | `/api/auth/me` | Current user |
-| GET | `/api/vaults` | List vaults |
-| POST | `/api/vaults` | Create vault row |
-| GET | `/api/vaults/:id` | Vault details |
-| GET | `/api/vaults/:id/transactions` | Vault transactions |
-| POST | `/api/vaults/:id/cancel` | Cancel vault |
-| POST | `/api/vaults/:id/approve-milestone` | Milestone approval |
-| POST | `/api/vaults/:id/raise-dispute` | Raise dispute |
-| GET | `/api/merchants` | Merchant list |
-| POST | `/api/merchants` | Register merchant |
-| PUT | `/api/merchants/:id/verify` | Verify merchant |
-| GET | `/api/analytics/overview` | Overview analytics |
-| GET | `/api/analytics/daily` | Daily analytics |
-| GET | `/api/analytics/user/:wallet` | Wallet analytics |
-| GET | `/api/notifications` | Notification list |
-| PUT | `/api/notifications/:id/read` | Mark read |
-| PUT | `/api/notifications/read-all` | Mark all read |
+```bash
+pnpm --filter @powermoney/backend lint
+```
+
+Tests:
+
+```bash
+pnpm --filter @powermoney/backend test
+```
+
+## API Surface
+
+Mounted under `/api`:
+- `/auth`
+- `/vaults`
+- `/merchants`
+- `/analytics`
+- `/notifications`
+- `/transactions`
+- `/fees`
+- `/admin`
+- `/payment-links`
+- `/payment-sessions`
+- `/invoices`
+- `/refunds`
+- `/qr`
+- `/developer`
+- `/agent-wallets`
+
+Health:
+- `GET /health`
+
+## MCP Dependency Path
+
+The MCP server calls backend endpoints under:
+- `/api/v1/agent-wallets/agent/*`
+
+Backend response envelope must remain stable:
+
+```json
+{ "success": true, "data": {} }
+```
+
+or
+
+```json
+{ "success": false, "error": { "message": "...", "code": "..." } }
+```
+
+## Operational Notes
+
+- Keep policy enforcement backend-side (limits, allowlists, category controls).
+- Use structured logs and correlation IDs for tracing.
+- Protect privileged endpoints with strong auth + role checks.
+- Run migrations before feature validation.
+
+## Related Docs`r`n`r`n- Architecture: `../docs/ARCHITECTURE.md` `r`n- API Contracts: `../docs/API-CONTRACTS.md`
+
+- Root architecture: `../README.md`
+- Web client: `../web-frontend/README.md`
+- Smart contracts: `../smart-contracts/README.md`
+- SDK: `../sdk/README.md`
+- MCP server: `../mcp-server/README.md`
+
+
