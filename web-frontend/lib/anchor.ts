@@ -487,6 +487,87 @@ export async function raiseDisputeOnChain(
     .rpc();
 }
 
+export async function triggerOracleOnChain(
+  wallet: AnchorWallet,
+  vaultAddress: PublicKey,
+  recipientAddress: PublicKey,
+  conditionIndex: number,
+  oracleFeedAddress: PublicKey,
+  observedValue: number,
+): Promise<TransactionSignature> {
+  const program = getProgram(wallet);
+  const connection = getConnection();
+  const vaultAuthority = deriveVaultAuthority(vaultAddress);
+  const vaultAta = await getAssociatedTokenAddress(
+    USDC_DEVNET_MINT,
+    vaultAuthority,
+    true,
+  );
+  const recipientAta = await ensureAta(
+    connection,
+    wallet,
+    recipientAddress,
+    USDC_DEVNET_MINT,
+  );
+
+  return program.methods
+    .triggerOracle(conditionIndex, new BN(observedValue))
+    .accounts({
+      authority: wallet.publicKey,
+      vault: vaultAddress,
+      oracleFeed: oracleFeedAddress,
+      vaultAuthority,
+      vaultTokenAccount: vaultAta,
+      recipientTokenAccount: recipientAta,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .rpc();
+}
+
+export async function voteDisputeOnChain(
+  wallet: AnchorWallet,
+  vaultAddress: PublicKey,
+  creatorAddress: PublicKey,
+  recipientAddress: PublicKey,
+  voteForPlaintiff: boolean,
+): Promise<TransactionSignature> {
+  const program = getProgram(wallet);
+  const connection = getConnection();
+  const disputePda = deriveDisputePda(vaultAddress);
+  const vaultAuthority = deriveVaultAuthority(vaultAddress);
+  const vaultAta = await getAssociatedTokenAddress(
+    USDC_DEVNET_MINT,
+    vaultAuthority,
+    true,
+  );
+  const creatorAta = await ensureAta(
+    connection,
+    wallet,
+    creatorAddress,
+    USDC_DEVNET_MINT,
+  );
+  const recipientAta = await ensureAta(
+    connection,
+    wallet,
+    recipientAddress,
+    USDC_DEVNET_MINT,
+  );
+
+  return program.methods
+    .voteDispute(voteForPlaintiff)
+    .accounts({
+      juror: wallet.publicKey,
+      vault: vaultAddress,
+      dispute: disputePda,
+      vaultAuthority,
+      vaultTokenAccount: vaultAta,
+      creatorTokenAccount: creatorAta,
+      recipientTokenAccount: recipientAta,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    })
+    .rpc();
+}
+
 export async function fetchVaultOnChain(
   wallet: AnchorWallet,
   vaultAddress: PublicKey,

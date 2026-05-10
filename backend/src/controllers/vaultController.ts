@@ -276,6 +276,7 @@ export async function raiseDispute(req: AuthenticatedRequest, res: Response): Pr
   const { id } = req.params;
   const wallet = req.user?.walletAddress;
   const reason = req.body.reason as string;
+  const jurors = (req.body.jurors ?? []) as string[];
 
   const { data: vault, error: vaultError } = await supabase.from("vaults").select("*").eq("id", id).single();
   if (vaultError || !vault) throw new AppError("NOT_FOUND", "Vault not found", 404);
@@ -289,6 +290,7 @@ export async function raiseDispute(req: AuthenticatedRequest, res: Response): Pr
       plaintiff_wallet: wallet,
       defendant_wallet: defendant,
       reason,
+      jurors,
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       status: "open",
     })
@@ -299,7 +301,79 @@ export async function raiseDispute(req: AuthenticatedRequest, res: Response): Pr
 
   await supabase.from("vaults").update({ status: "disputed", updated_at: new Date().toISOString() }).eq("id", id);
 
+  notificationService.notifyDisputeRaised(defendant, id).catch((e) =>
+    logger.error({ err: e }, "Failed to notify dispute"),
+  );
+
   return sendSuccess(res, 201, data);
+}
+
+export async function getDispute(req: Request, res: Response): Promise<Response> {
+  const { id } = req.params;
+  const { data, error } = await supabase
+    .from("disputes")
+    .select("*")
+    .eq("vault_id", id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) throw new AppError("NOT_FOUND", "No dispute found for this vault", 404);
+  return sendSuccess(res, 200, data);
+}
+
+export async function voteDispute(req: AuthenticatedRequest, res: Response): Promise<Response> {
+  const { id } = req.params;
+  const wallet = req.user?.walletAddress;
+  const { voteForPlaintiff, txSignature } = req.body as { voteForPlaintiff: boolean; txSignature: string };
+
+  const { data: dispute, error: disputeError } = await supabase
+    .from("disputes")
+    .select("*")
+    .eq("vault_id", id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (disputeError || !dispute) throw new AppError("NOT_FOUND", "No dispute found for this vault", 404);
+  if (dispute.status !== "open") throw new AppError("UNPROCESSABLE_ENTITY", "Dispute is no longer open for voting", 422);
+
+  const jurors = (dispute.jurors ?? []) as string[];
+  if (!jurors.includes(wallet!)) throw new AppError("FORBIDDEN", "You are not a juror on this dispute", 403);
+
+  const newPlaintiffVotes = voteForPlaintiff ? (dispute.votes_for_plaintiff ?? 0) + 1 : (dispute.votes_for_plaintiff ?? 0);
+  const newDefendantVotes = voteForPlaintiff ? (dispute.votes_for_defendant ?? 0) : (dispute.votes_for_defendant ?? 0) + 1;
+  const majority = Math.ceil(jurors.length / 2);
+
+  const updateData: Record<string, unknown> = {
+    votes_for_plaintiff: newPlaintiffVotes,
+    votes_for_defendant: newDefendantVotes,
+  };
+
+  if (newPlaintiffVotes >= majority) {
+    updateData.status = "resolved_plaintiff";
+    updateData.resolved_at = new Date().toISOString();
+  } else if (newDefendantVotes >= majority) {
+    updateData.status = "resolved_defendant";
+    updateData.resolved_at = new Date().toISOString();
+  }
+
+  await supabase.from("disputes").update(updateData).eq("id", dispute.id);
+
+  if (updateData.status === "resolved_plaintiff" || updateData.status === "resolved_defendant") {
+    await supabase.from("vaults").update({ status: "released", updated_at: new Date().toISOString() }).eq("id", id);
+  }
+
+  await supabase.from("transactions").insert({
+    vault_id: id,
+    tx_signature: txSignature,
+    tx_type: "dispute_vote",
+    condition_type: "dispute",
+    metadata: { voteForPlaintiff, voter: wallet },
+  });
+
+  const { data: updated } = await supabase.from("disputes").select("*").eq("id", dispute.id).single();
+  return sendSuccess(res, 200, updated);
 }
 
 export async function getClaimableVaults(req: AuthenticatedRequest, res: Response): Promise<Response> {

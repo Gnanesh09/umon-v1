@@ -5,11 +5,13 @@ import {
   claimCategoryVault,
   createVault,
   getClaimableVaults,
+  getDispute,
   getVault,
   getVaultTransactions,
   listVaults,
   raiseDispute,
   recordAction,
+  voteDispute,
 } from "../controllers/vaultController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { validate } from "../middleware/validate.js";
@@ -26,4 +28,6 @@ vaultRouter.post("/:id/cancel", authenticate, validate(actionSchema), cancelVaul
 vaultRouter.post("/:id/claim", authenticate, validate(vaultIdSchema), claimCategoryVault);
 vaultRouter.post("/:id/approve-milestone", authenticate, validate(actionSchema), approveMilestone);
 vaultRouter.post("/:id/raise-dispute", authenticate, validate(actionSchema), raiseDispute);
+vaultRouter.get("/:id/dispute", validate(vaultIdSchema), getDispute);
+vaultRouter.post("/:id/vote-dispute", authenticate, voteDispute);
 vaultRouter.post("/:id/record-action", validate(vaultIdSchema), recordAction);

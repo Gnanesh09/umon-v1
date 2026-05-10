@@ -85,6 +85,10 @@ export class HeliusIndexerService {
         await this.handleFundsReleased(signature, logs);
       } else if (log.includes("DisputeRaised")) {
         await this.handleDisputeRaised(signature);
+      } else if (log.includes("DisputeResolved")) {
+        await this.handleDisputeResolved(signature);
+      } else if (log.includes("OracleTriggered")) {
+        await this.handleOracleTriggered(signature);
       } else if (log.includes("MilestoneApproved")) {
         await this.handleMilestoneApproved(signature);
       }
@@ -109,9 +113,33 @@ export class HeliusIndexerService {
 
   private async handleDisputeRaised(signature: string): Promise<void> {
     logger.info({ signature }, "DisputeRaised event detected");
+    await supabase.from("transactions").upsert(
+      { tx_signature: signature, tx_type: "dispute_raise", metadata: { event: "DisputeRaised" } },
+      { onConflict: "tx_signature" },
+    );
+  }
+
+  private async handleDisputeResolved(signature: string): Promise<void> {
+    logger.info({ signature }, "DisputeResolved event detected");
+    await supabase.from("transactions").upsert(
+      { tx_signature: signature, tx_type: "dispute_vote", metadata: { event: "DisputeResolved" } },
+      { onConflict: "tx_signature" },
+    );
+  }
+
+  private async handleOracleTriggered(signature: string): Promise<void> {
+    logger.info({ signature }, "OracleTriggered event detected");
+    await supabase.from("transactions").upsert(
+      { tx_signature: signature, tx_type: "oracle_trigger", metadata: { event: "OracleTriggered" } },
+      { onConflict: "tx_signature" },
+    );
   }
 
   private async handleMilestoneApproved(signature: string): Promise<void> {
     logger.info({ signature }, "MilestoneApproved event detected");
+    await supabase.from("transactions").upsert(
+      { tx_signature: signature, tx_type: "milestone_approve", metadata: { event: "MilestoneApproved" } },
+      { onConflict: "tx_signature" },
+    );
   }
 }

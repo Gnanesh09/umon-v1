@@ -37,11 +37,13 @@ export function timeAgo(dateString: string): string {
   return `${days}d ago`;
 }
 
-export function formatCountdown(targetDate: string | number): string {
+export function formatCountdown(targetDate: string | number | undefined | null): string {
+  if (targetDate == null || targetDate === "") return "No date set";
   const target =
     typeof targetDate === "number"
       ? targetDate * 1000
       : new Date(targetDate).getTime();
+  if (Number.isNaN(target)) return "Invalid date";
   const diff = target - Date.now();
   if (diff <= 0) return "Expired";
   const days = Math.floor(diff / 86_400_000);

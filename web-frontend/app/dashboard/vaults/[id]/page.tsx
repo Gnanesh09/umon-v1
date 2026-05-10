@@ -34,6 +34,8 @@ import {
   executeSplitOnChain,
   cancelVaultOnChain,
   raiseDisputeOnChain,
+  voteDisputeOnChain,
+  triggerOracleOnChain,
 } from "@/lib/anchor";
 import { api, type ApiResult } from "@/lib/api";
 import {
@@ -44,7 +46,7 @@ import {
   conditionTypeLabel,
   timeAgo,
 } from "@/lib/format";
-import { explorerTxUrl, explorerAddressUrl } from "@/lib/constants";
+import { explorerTxUrl, explorerAddressUrl, ORACLE_FEEDS } from "@/lib/constants";
 import type { Vault, Condition } from "@/types/domain";
 
 type Transaction = {
@@ -69,6 +71,7 @@ export default function VaultDetailPage(): ReactNode {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [disputeReason, setDisputeReason] = useState("");
   const [showDispute, setShowDispute] = useState(false);
+  const [jurorInputs, setJurorInputs] = useState<string[]>(["", "", ""]);
   const [countdown, setCountdown] = useState("");
 
   const txQuery = useQuery({
@@ -120,6 +123,46 @@ export default function VaultDetailPage(): ReactNode {
       receiptsQuery.refetch();
     },
     onError: () => toast.error("Failed to email receipt. Set your email in Settings."),
+  });
+
+  const disputeQuery = useQuery({
+    queryKey: ["vault-dispute", params.id],
+    queryFn: async () => {
+      const res = await api.get<ApiResult<{ id: string; plaintiff_wallet: string; defendant_wallet: string; reason: string; status: string; jurors: string[] | null; votes_for_plaintiff: number; votes_for_defendant: number; deadline: string; created_at: string }>>(`/vaults/${params.id}/dispute`);
+      return res.data?.data ?? null;
+    },
+    enabled: vault?.status === "disputed",
+    refetchInterval: 15_000,
+  });
+
+  const dispute = disputeQuery.data;
+
+  const firstOracleCondition = vault?.conditions?.find((c) => c.type === "oracle") as
+    | Extract<Condition, { type: "oracle" }>
+    | undefined;
+
+  const oracleFeedLabel = firstOracleCondition?.feed
+    ? Object.values(ORACLE_FEEDS).find((f) => f.address === firstOracleCondition.feed)?.label ?? "Unknown Feed"
+    : null;
+
+  const oraclePriceQuery = useQuery({
+    queryKey: ["oracle-price", firstOracleCondition?.feed],
+    queryFn: async () => {
+      const feed = firstOracleCondition!.feed;
+      const coinIds: Record<string, string> = {};
+      for (const [key, val] of Object.entries(ORACLE_FEEDS)) {
+        coinIds[val.address] = key.replace("_usd", "");
+      }
+      const coinId = coinIds[feed];
+      if (!coinId) return null;
+      const coinMap: Record<string, string> = { sol: "solana", btc: "bitcoin", eth: "ethereum" };
+      const geckoId = coinMap[coinId] ?? coinId;
+      const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${geckoId}&vs_currencies=usd`);
+      const data = (await resp.json()) as Record<string, { usd?: number }>;
+      return data[geckoId]?.usd ?? null;
+    },
+    enabled: !!firstOracleCondition?.feed,
+    refetchInterval: 30_000,
   });
 
   const firstTimeLock = vault?.conditions?.find((c) => c.type === "time_lock") as
@@ -203,7 +246,7 @@ export default function VaultDetailPage(): ReactNode {
         conditionIndex,
       );
       const condition = vault.conditions[conditionIndex];
-      const approverCount = condition?.type === "milestone" ? condition.approvers.length : 1;
+      const approverCount = condition?.type === "milestone" ? (condition.approvers ?? []).length : 1;
       const isLastApprover = approverCount <= 1;
       const percentage = condition && "percentage" in condition ? Number(condition.percentage) : 0;
       const releaseAmount = isLastApprover ? Math.floor((vault.amount_usdc * percentage) / 100) : 0;
@@ -268,17 +311,103 @@ export default function VaultDetailPage(): ReactNode {
 
   const handleDispute = async (): Promise<void> => {
     if (!wallet || !vault || !disputeReason.trim()) return;
+    const validJurors = jurorInputs.filter((j) => j.trim().length > 0);
+    if (validJurors.length < 3) {
+      toast.error("You need at least 3 juror wallet addresses.");
+      return;
+    }
+    if (validJurors.length > 7) {
+      toast.error("Maximum 7 jurors allowed.");
+      return;
+    }
+    let jurorPubkeys: PublicKey[];
+    try {
+      jurorPubkeys = validJurors.map((j) => new PublicKey(j.trim()));
+    } catch {
+      toast.error("One or more juror addresses are invalid Solana wallet addresses.");
+      return;
+    }
     setActionLoading("dispute");
     try {
       const sig = await raiseDisputeOnChain(
         wallet,
         new PublicKey(vault.on_chain_id),
         disputeReason,
-        [],
+        jurorPubkeys,
       );
       toast.success(`Dispute raised! Tx: ${sig.slice(0, 12)}...`);
+      try {
+        const token = localStorage.getItem("pm_jwt");
+        await api.post(`/vaults/${params.id}/raise-dispute`, {
+          reason: disputeReason,
+          jurors: validJurors.map((j) => j.trim()),
+          txSignature: sig,
+        }, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      } catch { /* backend sync is best-effort */ }
       await syncAction({ txSignature: sig, txType: "dispute" });
       setShowDispute(false);
+      setDisputeReason("");
+      setJurorInputs(["", "", ""]);
+    } catch (error) {
+      const msg = parseOnChainError(error);
+      toast.error(msg);
+      if (msg.includes("Refreshing")) invalidate();
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleVote = async (voteForPlaintiff: boolean): Promise<void> => {
+    if (!wallet || !vault) return;
+    setActionLoading(voteForPlaintiff ? "vote-plaintiff" : "vote-defendant");
+    try {
+      const sig = await voteDisputeOnChain(
+        wallet,
+        new PublicKey(vault.on_chain_id),
+        new PublicKey(vault.creator_wallet),
+        new PublicKey(vault.recipient_wallet),
+        voteForPlaintiff,
+      );
+      toast.success(`Vote cast! Tx: ${sig.slice(0, 12)}...`);
+      try {
+        const token = localStorage.getItem("pm_jwt");
+        await api.post(`/vaults/${params.id}/vote-dispute`, {
+          voteForPlaintiff,
+          txSignature: sig,
+        }, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+      } catch { /* backend sync is best-effort */ }
+      await syncAction({ txSignature: sig, txType: "dispute_vote" });
+      disputeQuery.refetch();
+    } catch (error) {
+      const msg = parseOnChainError(error);
+      toast.error(msg);
+      if (msg.includes("Refreshing")) invalidate();
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleOracleTrigger = async (conditionIndex: number, condition: Extract<Condition, { type: "oracle" }>): Promise<void> => {
+    if (!wallet || !vault) return;
+    const currentPrice = oraclePriceQuery.data;
+    if (currentPrice == null) {
+      toast.error("Unable to fetch current price. Try again.");
+      return;
+    }
+    setActionLoading(`oracle-${conditionIndex}`);
+    try {
+      const sig = await triggerOracleOnChain(
+        wallet,
+        new PublicKey(vault.on_chain_id),
+        new PublicKey(vault.recipient_wallet),
+        conditionIndex,
+        new PublicKey(condition.feed),
+        Math.round(currentPrice * 100),
+      );
+      const percentage = condition.percentage ?? 0;
+      const releaseAmount = Math.floor((vault.amount_usdc * percentage) / 100);
+      toast.success(`Oracle triggered! Tx: ${sig.slice(0, 12)}...`);
+      await syncAction({ txSignature: sig, txType: "oracle_trigger", conditionType: "oracle", conditionIndex, releaseAmountUsdc: releaseAmount });
     } catch (error) {
       const msg = parseOnChainError(error);
       toast.error(msg);
@@ -442,7 +571,7 @@ export default function VaultDetailPage(): ReactNode {
               const Icon = condition.type === "time_lock" ? Clock : condition.type === "milestone" ? CheckCircle2 : condition.type === "auto_split" ? Split : condition.type === "oracle" ? Zap : ShoppingBag;
               const fulfilled = transactions.some((tx) => {
                 const meta = tx.metadata as Record<string, unknown> | undefined;
-                return meta?.conditionIndex === index && (tx.tx_type === "release" || tx.tx_type === "milestone_approve" || tx.tx_type === "split");
+                return meta?.conditionIndex === index && (tx.tx_type === "release" || tx.tx_type === "milestone_approve" || tx.tx_type === "split" || tx.tx_type === "oracle_trigger");
               });
               const vaultDone = vault.status === "released" || vault.status === "cancelled";
               const showAction = !vaultDone && !fulfilled;
@@ -461,11 +590,13 @@ export default function VaultDetailPage(): ReactNode {
 
                   {condition.type === "time_lock" ? (
                     <div className="mt-3">
-                      <p className="text-xs text-[var(--text-muted)]">Release: {new Date(condition.releaseTime).toLocaleString()}</p>
-                      {!fulfilled ? (
+                      <p className="text-xs text-[var(--text-muted)]">
+                        Release: {condition.releaseTime ? new Date(condition.releaseTime).toLocaleString() : "Not set"}
+                      </p>
+                      {!fulfilled && condition.releaseTime ? (
                         <p className="mt-1 font-mono text-sm tabular-nums">{countdown || "Calculating..."}</p>
                       ) : null}
-                      {showAction ? (
+                      {showAction && condition.releaseTime ? (
                         <Button
                           size="sm"
                           className="mt-2"
@@ -481,9 +612,9 @@ export default function VaultDetailPage(): ReactNode {
 
                   {condition.type === "milestone" ? (
                     <div className="mt-3 space-y-2">
-                      <p className="text-xs">{condition.description}</p>
+                      <p className="text-xs">{condition.description || "No description"}</p>
                       <div className="space-y-1">
-                        {condition.approvers.map((approver, aIdx) => (
+                        {(condition.approvers ?? []).map((approver, aIdx) => (
                           <div key={aIdx} className="flex items-center gap-2 text-xs">
                             <CheckCircle2 className={`h-3 w-3 ${fulfilled ? "text-[var(--success)]" : "text-[var(--text-faint)]"}`} />
                             <span className="font-mono">{truncateAddress(approver)}</span>
@@ -504,7 +635,7 @@ export default function VaultDetailPage(): ReactNode {
 
                   {condition.type === "auto_split" ? (
                     <div className="mt-3 space-y-2">
-                      {condition.splits.map((split, sIdx) => (
+                      {(condition.splits ?? []).map((split, sIdx) => (
                         <div key={sIdx} className="flex items-center justify-between text-xs">
                           <span className="font-mono">{truncateAddress(split.wallet)}</span>
                           <span className="tabular-nums">{split.percentage}%</span>
@@ -522,12 +653,70 @@ export default function VaultDetailPage(): ReactNode {
                     </div>
                   ) : null}
 
-                  {condition.type === "oracle" ? (
-                    <div className="mt-3 text-xs text-[var(--text-muted)]">
-                      <p>Feed: <span className="font-mono">{truncateAddress(condition.feed)}</span></p>
-                      <p>Operator: {condition.operator} | Threshold: {condition.threshold}</p>
-                    </div>
-                  ) : null}
+                  {condition.type === "oracle" ? (() => {
+                    const feedLabel = Object.values(ORACLE_FEEDS).find((f) => f.address === condition.feed)?.label ?? truncateAddress(condition.feed ?? "");
+                    const operatorLabels: Record<string, string> = { gt: ">", lt: "<", eq: "=", gte: "≥", lte: "≤" };
+                    const opLabel = operatorLabels[condition.operator ?? ""] ?? condition.operator ?? "—";
+                    const livePrice = oraclePriceQuery.data;
+                    return (
+                      <div className="mt-3 space-y-2">
+                        <div className="flex items-center gap-4 text-xs">
+                          <div>
+                            <span className="text-[var(--text-muted)]">Feed: </span>
+                            <span className="font-medium">{feedLabel}</span>
+                          </div>
+                          <div>
+                            <span className="text-[var(--text-muted)]">Condition: </span>
+                            <span className="font-mono font-medium">price {opLabel} ${condition.threshold}</span>
+                          </div>
+                        </div>
+                        {livePrice != null ? (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-[var(--text-muted)]">Live Price:</span>
+                            <span className={`font-mono font-bold ${
+                              (() => {
+                                const met = condition.operator === "gt" ? livePrice > condition.threshold
+                                  : condition.operator === "lt" ? livePrice < condition.threshold
+                                  : condition.operator === "gte" ? livePrice >= condition.threshold
+                                  : condition.operator === "lte" ? livePrice <= condition.threshold
+                                  : livePrice === condition.threshold;
+                                return met ? "text-[var(--success)]" : "text-[var(--text)]";
+                              })()
+                            }`}>
+                              ${livePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </span>
+                            {(() => {
+                              const met = condition.operator === "gt" ? livePrice > condition.threshold
+                                : condition.operator === "lt" ? livePrice < condition.threshold
+                                : condition.operator === "gte" ? livePrice >= condition.threshold
+                                : condition.operator === "lte" ? livePrice <= condition.threshold
+                                : livePrice === condition.threshold;
+                              return met ? <span className="rounded-full bg-[var(--success-subtle)] px-2 py-0.5 text-xs text-[var(--success)]">Condition Met</span> : null;
+                            })()}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-[var(--text-muted)]">Loading price...</p>
+                        )}
+                        {showAction ? (
+                          <Button
+                            size="sm"
+                            className="mt-1"
+                            loading={actionLoading === `oracle-${index}`}
+                            disabled={livePrice == null || !(
+                              condition.operator === "gt" ? livePrice > condition.threshold
+                              : condition.operator === "lt" ? livePrice < condition.threshold
+                              : condition.operator === "gte" ? livePrice >= condition.threshold
+                              : condition.operator === "lte" ? livePrice <= condition.threshold
+                              : livePrice === condition.threshold
+                            )}
+                            onClick={() => void handleOracleTrigger(index, condition as Extract<Condition, { type: "oracle" }>)}
+                          >
+                            <Zap className="h-3.5 w-3.5" /> Trigger Oracle Release
+                          </Button>
+                        ) : null}
+                      </div>
+                    );
+                  })() : null}
 
                   {condition.type === "category" ? (
                     <div className="mt-3">
@@ -558,8 +747,79 @@ export default function VaultDetailPage(): ReactNode {
           </div>
         </div>
 
+        {/* Dispute Info (shown when vault is disputed) */}
+        {vault.status === "disputed" && dispute ? (
+          <div className="card p-4">
+            <h3 className="mb-3 text-sm font-semibold text-amber-600">Dispute Active</h3>
+            <div className="space-y-3">
+              <div className="grid gap-2 text-xs sm:grid-cols-2">
+                <div>
+                  <span className="text-[var(--text-muted)]">Plaintiff: </span>
+                  <span className="font-mono">{truncateAddress(dispute.plaintiff_wallet)}</span>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">Defendant: </span>
+                  <span className="font-mono">{truncateAddress(dispute.defendant_wallet)}</span>
+                </div>
+              </div>
+              <div className="text-xs">
+                <span className="text-[var(--text-muted)]">Reason: </span>
+                <span>{dispute.reason}</span>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                <div>
+                  <span className="text-[var(--text-muted)]">Votes For Plaintiff: </span>
+                  <span className="font-bold text-[var(--success)]">{dispute.votes_for_plaintiff}</span>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">Votes For Defendant: </span>
+                  <span className="font-bold text-red-500">{dispute.votes_for_defendant}</span>
+                </div>
+                <div>
+                  <span className="text-[var(--text-muted)]">Status: </span>
+                  <span className="font-medium capitalize">{dispute.status.replace(/_/g, " ")}</span>
+                </div>
+              </div>
+              {dispute.jurors && dispute.jurors.length > 0 ? (
+                <div className="text-xs">
+                  <p className="text-[var(--text-muted)] mb-1">Jurors:</p>
+                  <div className="space-y-1">
+                    {dispute.jurors.map((juror, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="font-mono">{truncateAddress(juror)}</span>
+                        {juror === wallet?.publicKey?.toBase58() ? (
+                          <span className="rounded-full bg-[var(--primary-subtle)] px-2 py-0.5 text-xs text-[var(--primary)]">You</span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {dispute.status === "open" && dispute.jurors?.includes(wallet?.publicKey?.toBase58() ?? "") ? (
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    size="sm"
+                    loading={actionLoading === "vote-plaintiff"}
+                    onClick={() => void handleVote(true)}
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Vote for Plaintiff
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    loading={actionLoading === "vote-defendant"}
+                    onClick={() => void handleVote(false)}
+                  >
+                    <XCircle className="h-3.5 w-3.5" /> Vote for Defendant
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
         {/* Actions */}
-        {vault.status !== "released" && vault.status !== "cancelled" ? (
+        {vault.status !== "released" && vault.status !== "cancelled" && vault.status !== "disputed" ? (
           <div className="card p-4">
             <h3 className="mb-3 text-sm font-semibold text-[var(--text-muted)]">Actions</h3>
             <div className="flex flex-wrap gap-2">
@@ -577,14 +837,51 @@ export default function VaultDetailPage(): ReactNode {
               </Button>
             </div>
             {showDispute ? (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3 space-y-2">
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3 space-y-3">
                 <Input
                   label="Dispute Reason"
                   value={disputeReason}
                   onChange={(e) => setDisputeReason(e.target.value)}
                   placeholder="Describe the issue..."
                 />
-                <Button size="sm" loading={actionLoading === "dispute"} onClick={() => void handleDispute()} disabled={!disputeReason.trim()}>
+                <div>
+                  <p className="mb-2 text-xs font-medium text-[var(--text-muted)]">Juror Wallets (3–7 required)</p>
+                  {jurorInputs.map((juror, i) => (
+                    <div key={i} className="mb-1.5 flex items-center gap-2">
+                      <Input
+                        value={juror}
+                        onChange={(e) => {
+                          const updated = [...jurorInputs];
+                          updated[i] = e.target.value;
+                          setJurorInputs(updated);
+                        }}
+                        placeholder={`Juror ${i + 1} wallet address`}
+                      />
+                      {jurorInputs.length > 3 ? (
+                        <button
+                          onClick={() => setJurorInputs(jurorInputs.filter((_, idx) => idx !== i))}
+                          className="text-xs text-red-500 hover:text-red-700"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      ) : null}
+                    </div>
+                  ))}
+                  {jurorInputs.length < 7 ? (
+                    <button
+                      onClick={() => setJurorInputs([...jurorInputs, ""])}
+                      className="text-xs text-[var(--primary)] hover:underline"
+                    >
+                      + Add juror
+                    </button>
+                  ) : null}
+                </div>
+                <Button
+                  size="sm"
+                  loading={actionLoading === "dispute"}
+                  onClick={() => void handleDispute()}
+                  disabled={!disputeReason.trim() || jurorInputs.filter((j) => j.trim()).length < 3}
+                >
                   Submit Dispute
                 </Button>
               </motion.div>
